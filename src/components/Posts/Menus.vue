@@ -1,17 +1,21 @@
 <template>
-  <div class="p-4 space-y-2 mb-2">
+  <div class="">
     <button @click="createPost">
       Create Post
     </button>
     <div
       v-if="posts"
-      class="space-y-2 mb-2 flex flex-col"
+      class="space-y-2 mb-2 flex flex-col tree-link"
     >
       <router-link
         v-for="post in showPost()"
         :key="post.id"
         :to="`/menus-management/menus/${post.id}`"
-        class="text-truncate"
+        class="text-truncate link"
+        :class="{
+          'space-y-2 mb-': post.id === activePost,
+          'text-purple-500': post.id !== activePost
+        }"
         @click="open(post)"
       >
         {{ post.title }}
@@ -27,11 +31,13 @@ import { db, auth } from '@/firebase/config'
 import router from '@/router'
 import { useRoute } from 'vue-router'
 import { reactive, onMounted } from 'vue'
-// import { ref } from "vue"
+import { ref } from 'vue'
 import { toast } from 'vue3-toastify'
 
 const posts = useCollection(collection(db, 'posts'))
 const route = useRoute()
+const activePost = ref(null)
+
 
 const showPost = () => {
   if (posts.value) {
@@ -78,6 +84,7 @@ const state = reactive({
 
 const open = post => {
   state.selected = post
+  activePost.value = post.id
   router.push({ name: 'menus-detail', params: { id: post.id } })
 }
 
@@ -102,4 +109,13 @@ onMounted(async () => {
 })
 </script>
 
-<style lang="sass" scoped></style>
+<style lang="sass" scoped>
+.tree__link .link.router-link-active:before
+    content: "";
+    display: block;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    -webkit-transition: background-color .25s ease;
+    transition: background-color .25s ease;
+</style>

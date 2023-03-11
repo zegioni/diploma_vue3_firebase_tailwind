@@ -13,11 +13,9 @@ body
   background-color: #f8f8f8;
 
 .router-link-active
-  background-color: rgb(68, 0, 255);
   color: #f8f8f8;
 
 .router-link-exact-active
-  background-color: rgb(68, 0, 255);
   color: #f8f8f8;
 
 .text-truncate

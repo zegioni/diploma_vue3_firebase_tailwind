@@ -1,37 +1,34 @@
 <!-- eslint-disable prettier/prettier -->
 <template>
-  <div>
-    <nav class="h-screen flex ml-4">
+  <div class="flex grow">
+    <nav class="h-[40rem] flex ml-4">
       <div class="bg-white shadow-lg w-72">
-        <div class="flex justify-between p-4">
-          <button
-            :class="{ 'bg-blue-600': activeButton === 'menus' }"
-            @click="activeButton = 'menus'"
-          >
-            Menus
-          </button>
-          <button
-            :class="{ 'bg-blue-600': activeButton === 'items' }"
-            @click="activeButton = 'items'"
-          >
-            Items
-          </button>
-        </div>
-        <template v-if="activeButton === 'menus'">
-          <div>
+        <div class="p-4 space-y-2 mb-2">
+          <div class="flex justify-between">
+            <button
+              :class="{ 'bg-blue-600': activeButton === 'menus' }"
+              @click="open('menus')"
+            >
+              Menus
+            </button>
+            <button
+              :class="{ 'bg-blue-600': activeButton === 'items' }"
+              @click="open('items')"
+            >
+              Items
+            </button>
+          </div>
+
+          <div v-if="activeButton === 'menus'">
             <menus />
           </div>
-        </template>
-        <template v-if="activeButton === 'items'">
-          <div>
-            <items />
-          </div>
-        </template>
+        </div>
+        <div v-if="activeButton === 'items'">
+          <items />
+        </div>
       </div>
     </nav>
-    <div v-if="activeButton === 'menus'">
-      <PostDetail />
-    </div>
+    <PostDetail v-if="activeButton === 'menus'" />
   </div>
 </template>
 
@@ -42,13 +39,23 @@ import PostDetail from './PostDetail.vue'
 // import { useCollection } from "vuefire"
 // import { collection, getDoc, doc, addDoc, updateDoc } from "firebase/firestore"
 // import { db, auth } from "@/firebase/config"
-// import router from "@/router"
+import router from '@/router'
 // import { useRoute } from "vue-router"
 // import { reactive, onMounted } from "vue"
 import { ref } from 'vue'
 // import { toast } from "vue3-toastify"
 
 const activeButton = ref('menus')
+
+const open = click => {
+  activeButton.value = 'menus'
+  if (click === 'menus') {
+    activeButton.value = 'menus'
+  } else {
+    activeButton.value = 'items'
+    router.push('/menus-management')
+  }
+}
 
 // const posts = useCollection(collection(db, "posts"))
 // const route = useRoute()
