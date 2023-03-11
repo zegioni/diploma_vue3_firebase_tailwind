@@ -1,9 +1,9 @@
 <template>
   <nav
-    v-if="postId"
+    v-if="menuId"
     class="ml-4 grow"
   >
-    <div v-if="post">
+    <div v-if="menu">
       <div class="bg-white shadow-lg">
         <div class="flex justify-between p-4 space-y-2 mb-2">
           <div
@@ -13,7 +13,7 @@
           >
             <input
               id="title"
-              v-model="post.title"
+              v-model="menu.title"
               class="mt-1 px-3 py-2 bg-white border shadow-sm border-slate-300 placeholder-slate-400 focus:outline-none focus:border-sky-500 focus:ring-sky-500 block rounded-md sm:text-sm focus:ring-1"
               type="text"
             >
@@ -22,7 +22,7 @@
             <button
               type="button"
               class="ml-2"
-              @click="deletePost(post)"
+              @click="deleteMenu(menu)"
             >
               Delete
             </button>
@@ -38,12 +38,20 @@
             <div class="space-y-2 mb-2">
               <input
                 id="title"
-                v-model="post.description"
+                v-model="menu.description"
                 type="text"
                 class="mt-1 px-3 py-2 bg-white border shadow-sm border-slate-300 placeholder-slate-400 focus:outline-none focus:border-sky-500 focus:ring-sky-500 block w-full rounded-md sm:text-sm focus:ring-1"
               >
             </div>
-            <button @click="saveChange(post)">
+
+            <div class="space-y-2 mb-2">
+              Add item to menus
+            </div>
+            <div class="space-y-2 mb-2">
+              <listItem />
+            </div>
+
+            <button @click="saveChange(menu)">
               Save
             </button>
           </div>
@@ -55,17 +63,12 @@
     v-else
     class="text-center pr-4 p-4 grow"
   >
-    <p>Select a post to see details</p>
+    <p>Select a menu to see details</p>
   </div>
 </template>
 
 <script setup>
-// import { defineProps } from "vue"
-// import { useDocument } from "vuefire"
-// import { ref } from "vue"
-// import router from "@/router"
-// import { toast } from "vue3-toastify"
-// import { useRoute } from 'vue-router'
+import listItem from '@/components/Posts/ListItems.vue'
 
 import { doc, getDoc, updateDoc, deleteDoc } from 'firebase/firestore'
 import { ref, watch, onMounted } from 'vue'
@@ -75,20 +78,20 @@ import { toast } from 'vue3-toastify'
 
 const route = useRoute()
 const router = useRouter()
-const postId = ref(route.params.id)
-console.log(postId)
+const menuId = ref(route.params.id)
+console.log(menuId)
 
 
-const post = ref(null)
+const menu = ref(null)
 
-const getPost = async () => {
+const getMenu = async () => {
   try {
-    const docRef = doc(db, 'posts', postId.value)
-    const postDoc = await getDoc(docRef)
-    if (!postDoc.exists()) {
+    const docRef = doc(db, 'menus', menuId.value)
+    const menuDoc = await getDoc(docRef)
+    if (!menuDoc.exists()) {
       console.log('No such document!')
     } else {
-      post.value = postDoc.data()
+      menu.value = menuDoc.data()
     }
   } catch (err) {
     console.log(err)
@@ -96,41 +99,27 @@ const getPost = async () => {
 }
 
 onMounted(() => {
-  if (postId.value) {
-    getPost()
+  if (menuId.value) {
+    getMenu()
   }
 })
 
 
 watch(() => route.params.id, newId => {
-  postId.value = newId
+  menuId.value = newId
   if(newId) {
-    getPost()
+    getMenu()
   } else {
-    console.log('not such post')
+    console.log('not such menu')
   }
 }, { immediate: true })
-// const props = defineProps({
-//   post: {
-//     type: Object,
-//     required: true,
-//   },
-// })
-// const { data: post } = useDocument(doc(db, "posts", props.post.id))
 
-// // console.log(post)
-
-// const title = ref("")
-// title.value = post.value ? post.value.title : ""
-// const description = ref("")
-// description.value = post.value ? post.value.description : ""
-
-const deletePost = async post => {
+const deleteMenu = async menu => {
   try {
-    toast('Post Deleted !', {
+    toast('Menu Deleted !', {
       autoClose: 1000,
     })
-    await deleteDoc(doc(db, 'posts', post.id))
+    await deleteDoc(doc(db, 'menus', menu.id))
     router.push('/menus-management')
   } catch (error) {
     console.error(error)
@@ -140,11 +129,11 @@ const deletePost = async post => {
   }
 }
 
-const saveChange = async post => {
+const saveChange = async menu => {
   try {
-    await updateDoc(doc(db, 'posts', post.id), {
-      title: post.title,
-      description: post.description,
+    await updateDoc(doc(db, 'menus', menu.id), {
+      title: menu.title,
+      description: menu.description,
       updatedAt: new Date(),
     })
     toast('Wow so easy !', {

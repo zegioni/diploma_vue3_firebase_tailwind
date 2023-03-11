@@ -6,10 +6,10 @@
           <div class="flex items-center h-full">
             <span class="text-center">Nikita</span>
             <RouterLink
-              to="/post-view"
+              to="/menus-view"
               class="ml-1"
             >
-              POSTS
+              Menus
             </RouterLink>
           </div>
         </div>

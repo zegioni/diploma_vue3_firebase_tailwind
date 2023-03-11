@@ -1,24 +1,29 @@
 <template>
-  <div class="">
-    <button @click="createPost">
-      Create Post
-    </button>
+  <div>
+    <div class="text-center">
+      <button
+        class="space-y-2 mb-4 border-2 rounded-lg border-purple-500 p-2 w-[15rem]"
+        @click="createMenu"
+      >
+        Create Menu
+      </button>
+    </div>
     <div
-      v-if="posts"
-      class="space-y-2 mb-2 flex flex-col tree-link"
+      v-if="menus"
+      class="space-y-2 mb-2 flex flex-col"
     >
       <router-link
-        v-for="post in showPost()"
-        :key="post.id"
-        :to="`/menus-management/menus/${post.id}`"
-        class="text-truncate link"
+        v-for="menu in showMenu()"
+        :key="menu.id"
+        :to="`/menus-management/menus/${menu.id}`"
+        class="text-truncate p-2"
         :class="{
-          'space-y-2 mb-': post.id === activePost,
-          'text-purple-500': post.id !== activePost
+          'space-y-2 bg-purple-500': menu.id === activeMenu,
+          'text-purple-500': menu.id !== activeMenu
         }"
-        @click="open(post)"
+        @click="open(menu)"
       >
-        {{ post.title }}
+        {{ menu.title }}
       </router-link>
     </div>
   </div>
@@ -31,48 +36,49 @@ import { db, auth } from '@/firebase/config'
 import router from '@/router'
 import { useRoute } from 'vue-router'
 import { reactive, onMounted } from 'vue'
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import { toast } from 'vue3-toastify'
 
-const posts = useCollection(collection(db, 'posts'))
+const menus = useCollection(collection(db, 'menus'))
 const route = useRoute()
-const activePost = ref(null)
+const activeMenu = ref(null)
 
 
-const showPost = () => {
-  if (posts.value) {
-    const sortedPosts = [...posts.value].sort((a, b) => {
+const showMenu = () => {
+  if (menus.value) {
+    const sortedMenus = [...menus.value].sort((a, b) => {
       const dateA = a.updatedAt ? a.updatedAt.toDate() : a.createdAt.toDate()
       const dateB = b.updatedAt ? b.updatedAt.toDate() : b.createdAt.toDate()
       return dateB - dateA
     })
-    return sortedPosts
+    return sortedMenus
   }
   return null
 }
 
-const createPost = async () => {
+const createMenu = async () => {
   const user = auth.currentUser
   try {
-    toast('Post Created !', {
+    toast('Menu Created !', {
       autoClose: 1000,
     })
-    const postRef = collection(db, 'posts')
-    const newPost = {
+    const menuRef = collection(db, 'menus')
+    const newMenu = {
       id: '',
+      childId: '',
       title: 'New Title',
       description: '',
       createdAt: new Date(),
       createdBy: user.uid,
     }
-    const docRef = await addDoc(postRef, newPost)
+    const docRef = await addDoc(menuRef, newMenu)
     await updateDoc(docRef, { id: docRef.id })
-    newPost.id = docRef.id
-    router.push({ name: 'menus-detail', params: { id: newPost.id } })
-    open(newPost)
+    newMenu.id = docRef.id
+    router.push({ name: 'menus-detail', params: { id: newMenu.id } })
+    open(newMenu)
   } catch (error) {
     console.log(error)
-    toast('Post Error !', {
+    toast('Menu Created Error !', {
       autoClose: 1000,
     })
   }
@@ -82,24 +88,24 @@ const state = reactive({
   selected: null,
 })
 
-const open = post => {
-  state.selected = post
-  activePost.value = post.id
-  router.push({ name: 'menus-detail', params: { id: post.id } })
+const open = menu => {
+  state.selected = menu
+  activeMenu.value = menu.id
+  router.push({ name: 'menus-detail', params: { id: menu.id } })
 }
 
 onMounted(async () => {
   try {
-    const postId = route.params.id
-    if (postId) {
-      const postDocRef = doc(db, 'posts', postId)
-      const postDoc = await getDoc(postDocRef)
-
-      if (postDoc.exists()) {
-        const postData = postDoc.data()
-        state.selected = postData
+    const menuId = route.params.id
+    if (menuId) {
+      const menuDocRef = doc(db, 'menus', menuId)
+      const menuDoc = await getDoc(menuDocRef)
+      if (menuDoc.exists()) {
+        const menuData = menuDoc.data()
+        state.selected = menuData
+        open(menuData)
       } else {
-        console.log('No such post!')
+        console.log('No such menu!')
         router.push('/menus-management')
       }
     }
@@ -107,15 +113,15 @@ onMounted(async () => {
     console.error(error)
   }
 })
+
+watch(
+  () => route.path,
+  newVal => {
+    if (newVal === '/menus-management') {
+      activeMenu.value = null
+    }
+  }
+)
 </script>
 
-<style lang="sass" scoped>
-.tree__link .link.router-link-active:before
-    content: "";
-    display: block;
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    -webkit-transition: background-color .25s ease;
-    transition: background-color .25s ease;
-</style>
+<style lang="sass" scoped></style>

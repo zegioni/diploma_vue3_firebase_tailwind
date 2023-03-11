@@ -8,22 +8,22 @@
       <div class="w-230">
         <router-link
           to="/menus-management"
-          class="space-y-2 mb-2 w-full w-230 bg-purple-500 p-2 block" 
+          class="space-y-2 mb-2 w-full w-230 bg-purple-500 p-2 block"
         >
           Menus
         </router-link>
       </div>
     </div>
-    <ShowPosts />
+    <ShowData />
   </nav>
 </template>
 
 <script>
-import ShowPosts from '../Posts/ShowData.vue'
+import ShowData from '../Posts/ShowData.vue'
 
 export default {
   components: {
-    ShowPosts,
+    ShowData,
   },
 }
 </script>

@@ -8,8 +8,8 @@ const routes = [
     redirect: { name: 'Login' },
   },
   {
-    path: '/post-view',
-    name: 'post-view',
+    path: '/menus-view',
+    name: 'menus-view',
     component: () => import('../views/Home.vue'),
   },
   {
@@ -23,7 +23,15 @@ const routes = [
       {
         path: 'menus/:id',
         name: 'menus-detail',
-        component: () => import('../components/Posts/PostDetail.vue'),
+        component: () => import('../components/Posts/ShowData.vue'),
+        meta: {
+          requiresAuth: true,
+        },
+      },
+      {
+        path: 'items/:id',
+        name: 'items-detail',
+        component: () => import('../components/Posts/ShowData.vue'),
         meta: {
           requiresAuth: true,
         },
