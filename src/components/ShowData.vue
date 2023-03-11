@@ -34,13 +34,14 @@
 </template>
 
 <script setup>
-import menus from '@/components/Posts/Menus.vue'
-import items from '@/components/Posts/Items.vue'
-import MenuDetail from './MenusDetail.vue'
-import ItemsDetail from './ItemsDetail.vue'
-import router from '@/router'
 import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
+
+import menus from '@/components/Menus/Menus.vue'
+import items from '@/components/Items/Items.vue'
+import MenuDetail from '@/components/Menus/MenusDetail.vue'
+import ItemsDetail from '@/components/Items/ItemsDetail.vue'
+import router from '@/router'
 
 const activeButton = ref('menus')
 const route = useRoute()

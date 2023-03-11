@@ -19,7 +19,7 @@
 </template>
 
 <script>
-import ShowData from '../Posts/ShowData.vue'
+import ShowData from '@/components/ShowData.vue'
 
 export default {
   components: {

@@ -36,10 +36,16 @@
 import { useCollection, useDocument } from 'vuefire'
 import { collection } from 'firebase/firestore'
 import { db } from '@/firebase/config'
-import { ref, reactive, computed } from 'vue'
-import { doc } from 'firebase/firestore'
+import { defineEmits } from 'vue'
 
-const items = useCollection(collection(db, 'menus'))
+import { ref, reactive, computed, onMounted, watch } from 'vue'
+import { doc } from 'firebase/firestore'
+import { useRoute, useRouter } from 'vue-router'
+
+const items = useCollection(collection(db, 'items'))
+const emits = defineEmits(['selected-items'])
+const route = useRoute()
+const menuId = ref(route.params.id)
 
 const state = reactive({
   isOpen: false,
@@ -49,6 +55,28 @@ const state = reactive({
 const selectedItemsTitle = computed(() => {
   return state.selectedItems.map(item => item.title).join(', ')
 })
+
+const getitem = async () => {
+  // Получаем ссылку на коллекцию 'items'
+    const itemsRef = collection(db, 'items')
+    // Получаем все документы из коллекции 'items'
+    const querySnapshot = await getDocs(itemsRef)
+    // Проходим по каждому документу
+    querySnapshot.forEach(async doc => {
+    // Получаем значение 'parentId' из документа
+    const parentId = doc.data().parentId
+    console.log(`Document with ID ${doc.id} has parentId ${JSON.stringify(parentId)}`)
+    // Находим индекс элемента в 'parentId', который содержит значение 'menu.id'
+    const indexToRemove = parentId.findIndex(item => item.id === menuId)
+    console.log(`Document with ID ${doc.id} has parentId ${JSON.stringify(parentId)} in menu ${menu.id} with index ${indexToRemove}`)
+  })
+  //siroe
+}
+
+// Load selected items from local storage on mount
+onMounted(() => {
+})
+
 
 const filteredItems = computed(() => {
   if (!state.searchTerm) {
@@ -66,6 +94,7 @@ const onToggleSelect = item => {
   } else {
     state.selectedItems.splice(index, 1)
   }
+  emits('selected-items', state.selectedItems)
 }
 
 const isSelected = item => {

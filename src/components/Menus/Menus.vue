@@ -66,7 +66,7 @@ const createMenu = async () => {
     const newMenu = {
       id: '',
       childId: '',
-      title: 'New Title',
+      title: 'New Menu',
       description: '',
       createdAt: new Date(),
       createdBy: user.uid,

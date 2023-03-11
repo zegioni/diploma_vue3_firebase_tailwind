@@ -23,7 +23,7 @@ const routes = [
       {
         path: 'menus/:id',
         name: 'menus-detail',
-        component: () => import('../components/Posts/ShowData.vue'),
+        component: () => import('../components/Menus/MenusDetail.vue'),
         meta: {
           requiresAuth: true,
         },
@@ -31,7 +31,7 @@ const routes = [
       {
         path: 'items/:id',
         name: 'items-detail',
-        component: () => import('../components/Posts/ShowData.vue'),
+        component: () => import('../components/ShowData.vue'),
         meta: {
           requiresAuth: true,
         },

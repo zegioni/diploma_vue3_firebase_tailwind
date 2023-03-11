@@ -1,9 +1,9 @@
 <template>
   <nav
-    v-if="menuId"
+    v-if="itemId"
     class="ml-4 grow"
   >
-    <div v-if="menu">
+    <div v-if="item">
       <div class="bg-white shadow-lg">
         <div class="flex justify-between p-4 space-y-2 mb-2">
           <div
@@ -13,7 +13,7 @@
           >
             <input
               id="title"
-              v-model="menu.title"
+              v-model="item.title"
               class="mt-1 px-3 py-2 bg-white border shadow-sm border-slate-300 placeholder-slate-400 focus:outline-none focus:border-sky-500 focus:ring-sky-500 block rounded-md sm:text-sm focus:ring-1"
               type="text"
             >
@@ -22,7 +22,7 @@
             <button
               type="button"
               class="ml-2"
-              @click="deleteMenu(menu)"
+              @click="deleteItem(item)"
             >
               Delete
             </button>
@@ -38,20 +38,20 @@
             <div class="space-y-2 mb-2">
               <input
                 id="title"
-                v-model="menu.description"
+                v-model="item.description"
                 type="text"
                 class="mt-1 px-3 py-2 bg-white border shadow-sm border-slate-300 placeholder-slate-400 focus:outline-none focus:border-sky-500 focus:ring-sky-500 block w-full rounded-md sm:text-sm focus:ring-1"
               >
             </div>
 
             <div class="space-y-2 mb-2">
-              Add item to menus
+              Add item to items
             </div>
             <div class="space-y-2 mb-2">
               <listItem />
             </div>
 
-            <button @click="saveChange(menu)">
+            <button @click="saveChange(item)">
               Save
             </button>
           </div>
@@ -63,12 +63,12 @@
     v-else
     class="text-center pr-4 p-4 grow"
   >
-    <p>Select a menu to see details</p>
+    <p>Select a item to see details</p>
   </div>
 </template>
 
 <script setup>
-import listItem from '@/components/Posts/ListItems.vue'
+import listItem from '@/components/Menus/ListItems.vue'
 
 import { doc, getDoc, updateDoc, deleteDoc } from 'firebase/firestore'
 import { ref, watch, onMounted } from 'vue'
@@ -78,20 +78,20 @@ import { toast } from 'vue3-toastify'
 
 const route = useRoute()
 const router = useRouter()
-const menuId = ref(route.params.id)
-console.log(menuId)
+const itemId = ref(route.params.id)
+console.log(itemId)
 
 
-const menu = ref(null)
+const item = ref(null)
 
-const getMenu = async () => {
+const getItem = async () => {
   try {
-    const docRef = doc(db, 'menus', menuId.value)
-    const menuDoc = await getDoc(docRef)
-    if (!menuDoc.exists()) {
-      console.log('No such document!')
+    const docRef = doc(db, 'items', itemId.value)
+    const itemDoc = await getDoc(docRef)
+    if (!itemDoc.exists()) {
+      console.log('No such items!')
     } else {
-      menu.value = menuDoc.data()
+      item.value = itemDoc.data()
     }
   } catch (err) {
     console.log(err)
@@ -99,27 +99,27 @@ const getMenu = async () => {
 }
 
 onMounted(() => {
-  if (menuId.value) {
-    getMenu()
+  if (itemId.value) {
+    getItem()
   }
 })
 
 
 watch(() => route.params.id, newId => {
-  menuId.value = newId
+  itemId.value = newId
   if(newId) {
-    getMenu()
+    getItem()
   } else {
-    console.log('not such menu')
+    console.log('not such item')
   }
 }, { immediate: true })
 
-const deleteMenu = async menu => {
+const deleteItem = async item => {
   try {
-    toast('Menu Deleted !', {
+    toast('Item Deleted !', {
       autoClose: 1000,
     })
-    await deleteDoc(doc(db, 'menus', menu.id))
+    await deleteDoc(doc(db, 'items', item.id))
     router.push('/menus-management')
   } catch (error) {
     console.error(error)
@@ -129,11 +129,11 @@ const deleteMenu = async menu => {
   }
 }
 
-const saveChange = async menu => {
+const saveChange = async item => {
   try {
-    await updateDoc(doc(db, 'menus', menu.id), {
-      title: menu.title,
-      description: menu.description,
+    await updateDoc(doc(db, 'items', item.id), {
+      title: item.title,
+      description: item.description,
       updatedAt: new Date(),
     })
     toast('Wow so easy !', {
