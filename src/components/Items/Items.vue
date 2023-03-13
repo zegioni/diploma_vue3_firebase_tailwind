@@ -5,7 +5,7 @@
         class="space-y-2 mb-4 border-2 rounded-lg border-purple-500 p-2 w-[15rem]"
         @click="createItem"
       >
-        Create Items
+        Create Item
       </button>
     </div>
     <div
@@ -65,7 +65,7 @@ const createItem = async () => {
     const itemRef = collection(db, 'items')
     const newItem = {
       id: '',
-      parentId: '',
+      parentId: [],
       title: 'New Item',
       description: '',
       createdAt: new Date(),

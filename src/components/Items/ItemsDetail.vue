@@ -1,9 +1,12 @@
 <template>
+    <div>test</div>
+</template>
+<!-- <template>
   <nav
-    v-if="itemId"
+    v-if="menuId"
     class="ml-4 grow"
   >
-    <div v-if="item">
+    <div v-if="menu">
       <div class="bg-white shadow-lg">
         <div class="flex justify-between p-4 space-y-2 mb-2">
           <div
@@ -13,7 +16,7 @@
           >
             <input
               id="title"
-              v-model="item.title"
+              v-model="menu.title"
               class="mt-1 px-3 py-2 bg-white border shadow-sm border-slate-300 placeholder-slate-400 focus:outline-none focus:border-sky-500 focus:ring-sky-500 block rounded-md sm:text-sm focus:ring-1"
               type="text"
             >
@@ -22,7 +25,7 @@
             <button
               type="button"
               class="ml-2"
-              @click="deleteItem(item)"
+              @click="deleteMenu(menu)"
             >
               Delete
             </button>
@@ -38,17 +41,17 @@
             <div class="space-y-2 mb-2">
               <input
                 id="title"
-                v-model="item.description"
+                v-model="menu.description"
                 type="text"
                 class="mt-1 px-3 py-2 bg-white border shadow-sm border-slate-300 placeholder-slate-400 focus:outline-none focus:border-sky-500 focus:ring-sky-500 block w-full rounded-md sm:text-sm focus:ring-1"
               >
             </div>
 
             <div class="space-y-2 mb-2">
-              Add item to items
+              Add item to menus
             </div>
             <div class="space-y-2 mb-2">
-              <listItem />
+              <listMenus @on-menu-selected="onMenuSelected" />
             </div>
 
             <button @click="saveChange(item)">
@@ -63,64 +66,96 @@
     v-else
     class="text-center pr-4 p-4 grow"
   >
-    <p>Select a item to see details</p>
+    <p>Select a menu to see details</p>
   </div>
 </template>
 
 <script setup>
-import listItem from '@/components/Menus/ListItems.vue'
+import listMenus from '@/components/Items/ListMenus.vue'
 
-import { doc, getDoc, updateDoc, deleteDoc } from 'firebase/firestore'
+import { doc, getDoc, getDocs, writeBatch, arrayRemove, onSnapshot,updateDoc, arrayUnion, collection, where, query } from 'firebase/firestore'
 import { ref, watch, onMounted } from 'vue'
+import { useCollection, useDocument } from 'vuefire'
 import { useRoute, useRouter } from 'vue-router'
 import { db } from '@/firebase/config'
 import { toast } from 'vue3-toastify'
 
 const route = useRoute()
 const router = useRouter()
-const itemId = ref(route.params.id)
-console.log(itemId)
+const menuId = ref(route.params.id)
 
 
 const item = ref(null)
+const parent = ref([])
 
-const getItem = async () => {
+const onMenuSelected = selected => {
+  console.log('selected', selected)
+  parent.value = selected
+}
+watch(parent.value, (newValue, oldValue) => {
+  console.log('child changed', newValue, oldValue)
+})
+
+const getMenu = async () => {
   try {
-    const docRef = doc(db, 'items', itemId.value)
-    const itemDoc = await getDoc(docRef)
-    if (!itemDoc.exists()) {
-      console.log('No such items!')
+    const docRef = doc(db, 'menus', menuId.value)
+    const menuDoc = await getDoc(docRef)
+    if (!menuDoc.exists()) {
+      console.log('No such document!')
     } else {
-      item.value = itemDoc.data()
+      menu.value = menuDoc.data()
     }
   } catch (err) {
     console.log(err)
   }
 }
-
 onMounted(() => {
-  if (itemId.value) {
-    getItem()
+  if (menuId.value) {
+    getMenu()
   }
 })
 
 
 watch(() => route.params.id, newId => {
-  itemId.value = newId
+  menuId.value = newId
   if(newId) {
-    getItem()
+    getMenu()
   } else {
-    console.log('not such item')
+    console.log('not such menu')
   }
 }, { immediate: true })
 
-const deleteItem = async item => {
+const deleteMenu = async menu => {
   try {
-    toast('Item Deleted !', {
+    const batch = writeBatch(db)
+    // удаление самого меню
+    batch.delete(doc(db, 'menus', menu.id))
+
+    // Получаем ссылку на коллекцию 'items'
+    const itemsRef = collection(db, 'items')
+    // Получаем все документы из коллекции 'items'
+    const querySnapshot = await getDocs(itemsRef)
+    // Проходим по каждому документу
+    querySnapshot.forEach(async doc => {
+    // Получаем значение 'parentId' из документа
+    const parentId = doc.data().parentId
+    console.log('parentId', parentId)
+    console.log(`Document with ID ${doc.id} has parentId ${JSON.stringify(parentId)}`)
+    // Находим индекс элемента в 'parentId', который содержит значение 'menu.id'
+    const indexToRemove = parentId.findIndex(item => item.id === menu.id)
+    // Если индекс найден, то удаляем элемент
+    if (indexToRemove !== -1) {
+    parentId.splice(indexToRemove, 1)
+    console.log(`Document with ID ${doc.id} has parentId ${JSON.stringify(parentId)} after removing ${menu.id}`)
+    await updateDoc(doc.ref, { parentId })
+    }
+    })
+
+    await batch.commit()
+    router.push('/menus-management')
+    toast('Menu Deleted !', {
       autoClose: 1000,
     })
-    await deleteDoc(doc(db, 'items', item.id))
-    router.push('/menus-management')
   } catch (error) {
     console.error(error)
     toast('Error !', {
@@ -129,13 +164,24 @@ const deleteItem = async item => {
   }
 }
 
-const saveChange = async item => {
+
+const saveChange = async menu => {
+  const childIds = child.value.map(item => item.id)
+  console.log('childIds', childIds)
   try {
-    await updateDoc(doc(db, 'items', item.id), {
-      title: item.title,
-      description: item.description,
+    const batch = writeBatch(db)
+    batch.update(doc(db, 'menus', menu.id), {
+      title: menu.title,
+      description: menu.description,
       updatedAt: new Date(),
+      childId: child.value.map(item => ({ id: item.id, title: item.title }))
     })
+    childIds.forEach(id => {
+      batch.update(doc(db, 'items', id), {
+        parentId: arrayUnion({id: menu.id, title: menu.title})
+      })
+    })
+    await batch.commit()
     toast('Wow so easy !', {
       autoClose: 1000,
     })
@@ -148,4 +194,4 @@ const saveChange = async item => {
 }
 </script>
 
-<style lang="sass" scoped></style>
+<style lang="sass" scoped></style> -->

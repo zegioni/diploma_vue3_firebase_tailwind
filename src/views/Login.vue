@@ -91,6 +91,7 @@ export default {
       // console.log("userLogin", user);
       if (user) {
         store.commit('setUser', JSON.parse(user))
+        router.push('/menus-management')
       }
     }
 

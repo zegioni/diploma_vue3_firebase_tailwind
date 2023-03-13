@@ -48,7 +48,7 @@
               Add item to menus
             </div>
             <div class="space-y-2 mb-2">
-              <listItem @selected-items="child = $event" />
+              <listItem @on-item-selected="onItemSelected" />
             </div>
 
             <button @click="saveChange(menu)">
@@ -70,7 +70,7 @@
 <script setup>
 import listItem from '@/components/Menus/ListItems.vue'
 
-import { doc, getDoc, getDocs, writeBatch, arrayRemove, onSnapshot,updateDoc, arrayUnion, collection, where, query } from 'firebase/firestore'
+import { doc, getDoc, getDocs, writeBatch, arrayRemove, onSnapshot,updateDoc, arrayUnion, collection, where, query, deleteDoc } from 'firebase/firestore'
 import { ref, watch, onMounted } from 'vue'
 import { useCollection, useDocument } from 'vuefire'
 import { useRoute, useRouter } from 'vue-router'
@@ -80,11 +80,18 @@ import { toast } from 'vue3-toastify'
 const route = useRoute()
 const router = useRouter()
 const menuId = ref(route.params.id)
-console.log(menuId)
 
 
 const menu = ref(null)
 const child = ref([])
+
+const onItemSelected = selected => {
+  console.log('selected', selected)
+  child.value = selected
+}
+watch(child.value, (newValue, oldValue) => {
+  console.log('child changed', newValue, oldValue)
+})
 
 const getMenu = async () => {
   try {
@@ -129,15 +136,20 @@ const deleteMenu = async menu => {
     querySnapshot.forEach(async doc => {
     // Получаем значение 'parentId' из документа
     const parentId = doc.data().parentId
+    console.log('parentId', parentId)
     console.log(`Document with ID ${doc.id} has parentId ${JSON.stringify(parentId)}`)
     // Находим индекс элемента в 'parentId', который содержит значение 'menu.id'
-    const indexToRemove = parentId.findIndex(item => item.id === menu.id)
-    // Если индекс найден, то удаляем элемент
-    if (indexToRemove !== -1) {
+    if (!parentId.length) {
+  await deleteDoc(doc.ref)
+} else {
+  const indexToRemove = parentId.findIndex(item => item.id === menu.id)
+  if (indexToRemove !== -1) {
     parentId.splice(indexToRemove, 1)
     console.log(`Document with ID ${doc.id} has parentId ${JSON.stringify(parentId)} after removing ${menu.id}`)
     await updateDoc(doc.ref, { parentId })
-    }
+  }
+}
+    // Если индекс найден, то удаляем элемент
     })
 
     await batch.commit()
@@ -152,10 +164,48 @@ const deleteMenu = async menu => {
     })
   }
 }
+// const deleteMenu = async menu => {
+//   try {
+//     const batch = updateBatch(db)
+//     // удаление самого меню
+//     batch.delete(doc(db, 'menus', menu.id))
+
+//     // Получаем ссылку на коллекцию 'items'
+//     const itemsRef = collection(db, 'items')
+//     // Получаем все документы из коллекции 'items'
+//     const querySnapshot = await getDocs(itemsRef)
+//     // Проходим по каждому документу
+//     querySnapshot.forEach(async doc => {
+//       // Получаем значение 'parentId' из документа
+//       const parentId = doc.data().parentId
+//       console.log(`Document with ID ${doc.id} has parentId ${JSON.stringify(parentId)}`)
+//       // Находим индекс элемента в 'parentId', который содержит значение 'menu.id'
+//       const indexToRemove = parentId.findIndex(item => item.id === menu.id)
+//       // Если индекс найден, то удаляем элемент
+//       if (indexToRemove !== -1) {
+//         parentId.splice(indexToRemove, 1)
+//         console.log(`Document with ID ${doc.id} has parentId ${JSON.stringify(parentId)} after removing ${menu.id}`)
+//         batch.update(doc.ref, { parentId })
+//       }
+//     })
+
+//     await batch.commit()
+//     router.push('/menus-management')
+//     toast('Menu Deleted !', {
+//       autoClose: 1000,
+//     })
+//   } catch (error) {
+//     console.error(error)
+//     toast('Error !', {
+//       autoClose: 1000,
+//     })
+//   }
+// }
+
 
 const saveChange = async menu => {
   const childIds = child.value.map(item => item.id)
-  console.log(childIds)
+  console.log('childIds', childIds)
   try {
     const batch = writeBatch(db)
     batch.update(doc(db, 'menus', menu.id), {
@@ -170,7 +220,6 @@ const saveChange = async menu => {
       })
     })
     await batch.commit()
-    child.value = []
     toast('Wow so easy !', {
       autoClose: 1000,
     })
