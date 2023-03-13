@@ -84,8 +84,7 @@ import {
   deleteDoc,
   update,
 } from 'firebase/firestore'
-import { ref, watch, onMounted, computed } from 'vue'
-import { useCollection, useDocument } from 'vuefire'
+import { ref, watch, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { db } from '@/firebase/config'
 import { toast } from 'vue3-toastify'
@@ -105,11 +104,7 @@ const getMenu = async () => {
   try {
     const docRef = doc(db, 'menus', menuId.value)
     const menuDoc = await getDoc(docRef)
-    if (!menuDoc.exists()) {
-      //console.log('No such document!')
-    } else {
-      menu.value = menuDoc.data()
-    }
+    menu.value = menuDoc?.data()
   } catch (err) {
     console.log(err)
   }
@@ -141,7 +136,7 @@ const deleteMenu = async menu => {
 
     const itemsRef = collection(db, 'items')
     const querySnapshot = await getDocs(itemsRef)
-    querySnapshot.forEach(async doc => {
+    const promises = querySnapshot.docs.map(async doc => {
       const parentId = doc.data().parentId
       const indexToRemove = parentId.findIndex(item => item.id === menu.id)
       if (indexToRemove !== -1) {
@@ -149,9 +144,10 @@ const deleteMenu = async menu => {
           ...parentId.slice(0, indexToRemove),
           ...parentId.slice(indexToRemove + 1),
         ]
-        await updateDoc(doc.ref, { parentId: newParentId })
+        return updateDoc(doc.ref, { parentId: newParentId })
       }
     })
+    await Promise.all(promises)
 
     await batch.commit()
     router.push('/menus-management')
@@ -165,6 +161,7 @@ const deleteMenu = async menu => {
     })
   }
 }
+
 
 const saveChange = async menu => {
   const childIds = child.value
