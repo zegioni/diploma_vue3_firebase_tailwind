@@ -4,17 +4,17 @@
     class="ml-4 grow"
   >
     <div v-if="item">
-      <div class="bg-white shadow-lg">
+      <div class="bg-indigo-50 shadow-lg">
         <div class="flex justify-between p-4 space-y-2 mb-2">
           <div
-            class="flex"
+            class="grow"
             space-y-2
             mb-2
           >
             <input
               id="title"
               v-model="item.title"
-              class="mt-1 px-3 py-2 bg-white border shadow-sm border-slate-300 placeholder-slate-400 focus:outline-none focus:border-sky-500 focus:ring-sky-500 block rounded-md sm:text-sm focus:ring-1"
+              class="mt-1 px-3 py-2 bg-indigo-300 border shadow-sm border-slate-300 placeholder-slate-400 focus:outline-none focus:border-sky-500 focus:ring-sky-500 block w-full rounded-md text-xl focus:ring-1"
               type="text"
             >
           </div>
@@ -29,7 +29,7 @@
           </div>
         </div>
       </div>
-      <div class="bg-white shadow-lg">
+      <div class="bg-indigo-50 shadow-lg">
         <div class="p-4 space-y-2 mb-2">
           <div class="">
             <div class="space-y-2 mb-2">
@@ -40,15 +40,15 @@
                 id="title"
                 v-model="item.description"
                 type="text"
-                class="mt-1 px-3 py-2 bg-white border shadow-sm border-slate-300 placeholder-slate-400 focus:outline-none focus:border-sky-500 focus:ring-sky-500 block w-full rounded-md sm:text-sm focus:ring-1"
+                class="mt-1 px-3 py-2 bg-indigo-300 border shadow-sm border-slate-300 placeholder-slate-400 focus:outline-none focus:border-sky-500 focus:ring-sky-500 block w-full rounded-md sm:text-sm focus:ring-1"
               >
             </div>
 
             <div class="space-y-2 mb-2">
-              Add item to menus
+              Add item to items
             </div>
             <div class="space-y-2 mb-2">
-              <!-- <listMenus @on-menu-selected="onItemSelected" /> -->
+              <listMenus @on-menu-selected="onMenuSelected" />
             </div>
 
             <button @click="saveChange(item)">
@@ -69,28 +69,42 @@
 
 <script setup>
 import listMenus from '@/components/Items/ListMenus.vue'
-
-import { doc, getDoc, getDocs, writeBatch, arrayRemove, onSnapshot,updateDoc, arrayUnion, collection, where, query } from 'firebase/firestore'
-import { ref, watch, onMounted } from 'vue'
+import {
+  doc,
+  getDoc,
+  getDocs,
+  writeBatch,
+  arrayRemove,
+  onSnapshot,
+  updateDoc,
+  arrayUnion,
+  collection,
+  where,
+  query,
+  deleteDoc,
+} from 'firebase/firestore'
+import { ref, watch, onMounted, computed } from 'vue'
 import { useCollection, useDocument } from 'vuefire'
 import { useRoute, useRouter } from 'vue-router'
 import { db } from '@/firebase/config'
 import { toast } from 'vue3-toastify'
 
 const route = useRoute()
-const router = useRouter()
 const itemId = ref(route.params.id)
-
-
 const item = ref(null)
-const child = ref([])
+const parent = ref([])
 
-const onItemSelected = selected => {
-  console.log('selected', selected)
-  child.value = selected
+const onMenuSelected = selected => {
+  parent.value = selected.map(item => ({ id: item.id, title: item.title }))
 }
-watch(child.value, (newValue, oldValue) => {
-  console.log('child changed', newValue, oldValue)
+
+watch(parent, (newValue, oldValue) => {
+  console.log(
+    'parent value change out oldValue: ',
+    oldValue,
+    'to newValue: ',
+    newValue
+  )
 })
 
 const getItem = async () => {
@@ -98,7 +112,7 @@ const getItem = async () => {
     const docRef = doc(db, 'items', itemId.value)
     const itemDoc = await getDoc(docRef)
     if (!itemDoc.exists()) {
-      console.log('No such document!')
+      //console.log('No such document!')
     } else {
       item.value = itemDoc.data()
     }
@@ -106,76 +120,97 @@ const getItem = async () => {
     console.log(err)
   }
 }
+
 onMounted(() => {
   if (itemId.value) {
     getItem()
   }
 })
 
+watch(
+  () => route.params.id,
+  newId => {
+    itemId.value = newId
+    if (newId) {
+      getItem()
+    } else {
+      //console.log('not such item')
+    }
+  },
+  { immediate: true }
+)
 
-watch(() => route.params.id, newId => {
-  itemId.value = newId
-  if(newId) {
-    getItem()
-  } else {
-    console.log('not such menu')
-  }
-}, { immediate: true })
+const deleteItem = async item => {}
 
-const deleteItem = async item => {
+const saveChange = async item => {
+  const parentIds = parent.value
+    .filter(item => item !== undefined)
+    .map(item => item.id)
   try {
     const batch = writeBatch(db)
-
-    // Удаление элемента item из коллекции items
-    batch.delete(doc(db, 'items', route.params.id))
-
-    // Обновление childId в коллекции menus
-    const menusRef = collection(db, 'menus')
-    const querySnapshot = await getDocs(menusRef)
-
-    querySnapshot.forEach(async doc => {
-      const childId = doc.data().childId
-      const indexToRemove = childId.findIndex(item => item.itemId === route.params.id)
-
-      if (indexToRemove !== -1) {
-        childId.splice(indexToRemove, 1)
-        await updateDoc(doc.ref, { childId })
-      }
-    })
-
-    await batch.commit()
-
-    router.push('/menus-management')
-    toast('Menu Deleted!', { autoClose: 1500 })
-  } catch (error) {
-    console.error(error)
-  }
-}
-
-
-const saveChange = async menu => {
-  const childIds = child.value.map(item => item.id)
-  console.log('childIds', childIds)
-  try {
-    const batch = writeBatch(db)
-    batch.update(doc(db, 'menus', menu.id), {
-      title: menu.title,
-      description: menu.description,
-      updatedAt: new Date(),
-      childId: child.value.map(item => ({ id: item.id, title: item.title }))
-    })
-    childIds.forEach(id => {
-      batch.update(doc(db, 'items', id), {
-        parentId: arrayUnion({id: menu.id, title: menu.title})
+    const itemDocRef = doc(db, 'items', item.id)
+    const itemDocSnap = await getDoc(itemDocRef)
+    if (itemDocSnap.exists()) {
+      batch.update(itemDocRef, {
+        title: item.title,
+        description: item.description,
+        updatedAt: new Date(),
+        parentId: parentIds.map(id => ({ id })),
       })
-    })
-    await batch.commit()
-    toast('Wow so easy !', {
-      autoClose: 1000,
-    })
+      const menusRef = collection(db, 'menus')
+      const menusQuerySnapshot = await getDocs(menusRef)
+      menusQuerySnapshot.forEach(async doc => {
+        const childId = doc.data().childId
+        const indexToUpdate = childId.findIndex(
+          child => child.id === item.id
+        )
+        if (indexToUpdate !== -1) {
+          const newChildId = [
+            ...childId.slice(0, indexToUpdate),
+            ...childId.slice(indexToUpdate + 1),
+          ]
+          await updateDoc(doc.ref, { childId: newChildId })
+        }
+      })
+
+      const validChildIds = parentIds.filter(id => id !== undefined)
+      validChildIds.forEach(id => {
+        batch.update(doc(db, 'menus', id), {
+          childId: arrayUnion({ id: item.id, title: item.title }),
+        })
+      })
+
+      const MenusRef = collection(db, 'menus')
+      const querySnapshot2 = await getDocs(MenusRef)
+      querySnapshot2.forEach(async doc => {
+        const childId = doc.data().childId
+        //console.log(`Document with ID ${doc.id} has parentId ${JSON.stringify(parentId)}`)
+        if (!childId.length) {
+          await updateDoc(doc.ref, { childId })
+        } else {
+          const indexToUpdate = childId.findIndex(
+            item => item.id === item.id
+          )
+          if (indexToUpdate !== -1) {
+            const newChildId = [
+              ...childId.slice(0, indexToUpdate),
+              ...childId.slice(indexToUpdate + 1),
+            ]
+            //console.log(`Document with ID ${doc.id} has parentId ${JSON.stringify(newParentId)} after removing ${menu.id}`)
+            batch.update(doc.ref, { childId: newChildId })
+          }
+        }
+      })
+
+      await batch.commit()
+      parent.value = []
+      toast('Success', {
+        autoClose: 1000,
+      })
+    }
   } catch (error) {
     console.error(error)
-    toast('FUCK!', {
+    toast('Error', {
       autoClose: 1000,
     })
   }

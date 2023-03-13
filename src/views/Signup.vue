@@ -82,7 +82,7 @@ export default {
           password: password.value,
         })
         router.push('/login')
-        toast('Pls Verified email!', {
+        toast('Success', {
           autoClose: 1000,
         })
       } catch (err) {

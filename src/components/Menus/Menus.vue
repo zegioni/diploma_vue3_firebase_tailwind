@@ -2,7 +2,7 @@
   <div>
     <div class="text-center">
       <button
-        class="space-y-2 mb-4 border-2 rounded-lg border-purple-500 p-2 w-[15rem]"
+        class="space-y-2 mb-4 border-2 rounded-lg border-indigo-300 p-2 w-[15rem]"
         @click="createMenu"
       >
         Create Menu
@@ -18,8 +18,8 @@
         :to="`/menus-management/menus/${menu.id}`"
         class="text-truncate p-2"
         :class="{
-          'space-y-2 bg-purple-500': menu.id === activeMenu,
-          'text-purple-500': menu.id !== activeMenu
+          'space-y-2 bg-indigo-300': menu.id === activeMenu,
+          'text-indigo-50': menu.id !== activeMenu,
         }"
         @click="open(menu)"
       >
@@ -43,7 +43,6 @@ const menus = useCollection(collection(db, 'menus'))
 const route = useRoute()
 const activeMenu = ref(null)
 
-
 const showMenu = () => {
   if (menus.value) {
     const sortedMenus = [...menus.value].sort((a, b) => {
@@ -65,7 +64,7 @@ const createMenu = async () => {
     const menuRef = collection(db, 'menus')
     const newMenu = {
       id: '',
-      childId: '',
+      childId: [],
       title: 'New Menu',
       description: '',
       createdAt: new Date(),
@@ -105,7 +104,7 @@ onMounted(async () => {
         state.selected = menuData
         open(menuData)
       } else {
-        console.log('No such menu!')
+        //console.log('No such menu!')
         router.push('/menus-management')
       }
     }

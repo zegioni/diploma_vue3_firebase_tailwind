@@ -2,7 +2,7 @@
   <div>
     <div class="text-center">
       <button
-        class="space-y-2 mb-4 border-2 rounded-lg border-purple-500 p-2 w-[15rem]"
+        class="space-y-2 mb-4 border-2 rounded-lg border-indigo-300 p-2 w-[15rem]"
         @click="createItem"
       >
         Create Item
@@ -18,8 +18,8 @@
         :to="`/menus-management/items/${item.id}`"
         class="text-truncate p-2"
         :class="{
-          'space-y-2 bg-purple-500': item.id === activeItem,
-          'text-purple-500': item.id !== activeItem
+          'space-y-2 bg-indigo-300': item.id === activeItem,
+          'text-indigo-50': item.id !== activeItem,
         }"
         @click="open(item)"
       >
@@ -43,15 +43,14 @@ const items = useCollection(collection(db, 'items'))
 const route = useRoute()
 const activeItem = ref(null)
 
-
 const showItem = () => {
   if (items.value) {
-    const sortedItems = [...items.value].sort((a, b) => {
+    const sortedItem = [...items.value].sort((a, b) => {
       const dateA = a.updatedAt ? a.updatedAt.toDate() : a.createdAt.toDate()
       const dateB = b.updatedAt ? b.updatedAt.toDate() : b.createdAt.toDate()
       return dateB - dateA
     })
-    return sortedItems
+    return sortedItem
   }
   return null
 }
@@ -105,7 +104,7 @@ onMounted(async () => {
         state.selected = itemData
         open(itemData)
       } else {
-        console.log('No such item!')
+        //console.log('No such menu!')
         router.push('/menus-management')
       }
     }

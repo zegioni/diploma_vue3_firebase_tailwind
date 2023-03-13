@@ -10,13 +10,17 @@ export default {}
 
 <style lang="sass">
 body
-  background-color: #f8f8f8;
+  background-color: #c7d2fe;
+  color: #0f172a
+
+a 
+  color: #0f172a !important
 
 .router-link-active
-  color: #f8f8f8;
+  color: #0f172a
 
 .router-link-exact-active
-  color: #f8f8f8;
+  color: #0f172a
 
 .text-truncate
   white-space: nowrap;

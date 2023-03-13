@@ -1,5 +1,5 @@
 <template>
-  <nav class="bg-white shadow-lg mx-15 px-15 py-4">
+  <nav class="bg-indigo-50 shadow-lg mx-15 px-15 py-4">
     <div class="max-w-7xl mx-auto px-4">
       <div class="flex justify-between">
         <div class="flex-shrink-0">
@@ -15,7 +15,7 @@
         </div>
         <div class="ml-4 flex-shrink-0">
           <button
-            class="bg-gray-800 hover:bg-gray-700 text-white py-2 px-4 rounded"
+            class="bg-indigo-300 hover:bg-gray-700 text-white py-2 px-4 rounded"
             @click="logoutAndRedirect"
           >
             Log Out

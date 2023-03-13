@@ -1,34 +1,51 @@
 <template>
-    <div>test</div>
-</template>
-<!-- <template>
-  <div class="container">
-    <label for="select-items">Выберите элементы:</label>
+  <div class="container mx-auto mb-2">
     <input
+      id="select-menus"
       v-model="selectedMenusWithTitle"
       type="text"
-      @focus="showMenu"
+      name="select-menus"
+      readonly
+      class="mt-1 px-3 py-2 bg-indigo-300 border shadow-sm border-slate-300 placeholder-slate-400 focus:outline-none focus:border-sky-500 focus:ring-sky-500 block w-full rounded-md sm:text-sm focus:ring-1"
+      @focus="showMenus"
+      @blur="hideMenus"
     >
     <div
       v-show="showMenuList"
-      class="item-list"
+      class="mt-4 border border-gray-300 rounded-md shadow-sm"
     >
-      <div
-        v-for="(item, index) in menuList"
-        :key="index"
-      >
-        <input
-          :id="`item-${index}`"
-          v-model="selected"
-          type="checkbox"
-          :value="item"
-          @change="updateSelection"
+      <template v-if="menuList.length">
+        <div
+          v-for="(menu, index) in menuList"
+          :key="index"
+          class="px-4 py-3"
         >
-        <label :for="`item-${index}`">{{ item.title }}</label>
-      </div>
+          <label
+            :for="`menu-${index}`"
+            class="flex menus-center justify-between"
+          >
+            <span class="text-lg font-medium text-gray-700">{{ menu.title }}</span>
+            <input
+              :id="`menu-${index}`"
+              v-model="selected"
+              type="checkbox"
+              :value="menu"
+              class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+              @change="updateSelection"
+            >
+          </label>
+        </div>
+      </template>
+      <template v-else>
+        <div class="px-4 py-3 text-gray-500">
+          No such menus
+        </div>
+      </template>
     </div>
   </div>
 </template>
+
+
 <script setup>
 import { ref } from 'vue'
 import { defineEmits, onMounted, watch } from 'vue'
@@ -43,7 +60,7 @@ const selected = ref([])
 const selectedMenusWithTitle = ref('')
 const showMenuList = ref(false)
 const itemId = ref(route.params.id)
-const emits = defineEmits(['onMenuSelected'])
+const emits = defineEmits(['on-menu-selected'])
 
 const getMenuList = async () => {
   const querySnapshot = await getDocs(collection(db, 'menus'))
@@ -55,16 +72,16 @@ const getMenuList = async () => {
         childId: doc.data().childId
       }
       list.push(getList)
-      console.log(doc.id, ' => ', doc.data())
+      //console.log(doc.id, ' => ', doc.data())
   })
   menuList.value = list
-  // Get selected items based on childId
+  // Get selected menus based on parentId
   const selectedMenus = list.filter(item => {
-    const childId = item.childId.map(child => child.id)
-    return childId.indexOf(itemId.value) !== -1
+  // const parentIds = menu.parentId.map(parent => parent.id)
+  const childIds = Array.isArray(item.childId) ? item.childId.map(child => child.id) : []
+  return childIds.indexOf(itemId.value) !== -1
   })
   selected.value = selectedMenus
-  console.log(selected.value)
 }
 
 onMounted(() => {
@@ -76,16 +93,22 @@ watch(() => route.params.id, newItemId => {
   getMenuList()
 })
 
-const showMenu = () => {
+const showMenus = () => {
   showMenuList.value = true
 }
 
 const updateSelection = () => {
   selectedMenusWithTitle.value = selected.value.map(item => item.title).join(', ')
   showMenuList.value = false
-  emits('onMenuSelected', selected.value.map(item => ({ id: item.id, title: item.title })))
+  emits('on-menu-selected', selected.value.map(item => ({ id: item.id, title: item.title })))
 }
 
 watch(selected, updateSelection)
 
-</script> -->
+const hideMenus = () => {
+      setTimeout(() => {
+       showMenuList.value = false
+      }, 200)
+}
+
+</script>
