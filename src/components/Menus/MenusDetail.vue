@@ -89,7 +89,7 @@ const onItemSelected = selected => {
   console.log('selected', selected)
   child.value = selected
 }
-watch(child.value, (newValue, oldValue) => {
+watch(child.value, onItemSelected, (newValue, oldValue) => {
   console.log('child changed', newValue, oldValue)
 })
 
@@ -219,6 +219,7 @@ const saveChange = async menu => {
         parentId: arrayUnion({id: menu.id, title: menu.title})
       })
     })
+    child.value = []
     await batch.commit()
     toast('Wow so easy !', {
       autoClose: 1000,

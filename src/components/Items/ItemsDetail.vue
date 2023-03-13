@@ -1,12 +1,9 @@
 <template>
-    <div>test</div>
-</template>
-<!-- <template>
   <nav
-    v-if="menuId"
+    v-if="itemId"
     class="ml-4 grow"
   >
-    <div v-if="menu">
+    <div v-if="item">
       <div class="bg-white shadow-lg">
         <div class="flex justify-between p-4 space-y-2 mb-2">
           <div
@@ -16,7 +13,7 @@
           >
             <input
               id="title"
-              v-model="menu.title"
+              v-model="item.title"
               class="mt-1 px-3 py-2 bg-white border shadow-sm border-slate-300 placeholder-slate-400 focus:outline-none focus:border-sky-500 focus:ring-sky-500 block rounded-md sm:text-sm focus:ring-1"
               type="text"
             >
@@ -25,7 +22,7 @@
             <button
               type="button"
               class="ml-2"
-              @click="deleteMenu(menu)"
+              @click="deleteItem(item)"
             >
               Delete
             </button>
@@ -41,7 +38,7 @@
             <div class="space-y-2 mb-2">
               <input
                 id="title"
-                v-model="menu.description"
+                v-model="item.description"
                 type="text"
                 class="mt-1 px-3 py-2 bg-white border shadow-sm border-slate-300 placeholder-slate-400 focus:outline-none focus:border-sky-500 focus:ring-sky-500 block w-full rounded-md sm:text-sm focus:ring-1"
               >
@@ -51,7 +48,7 @@
               Add item to menus
             </div>
             <div class="space-y-2 mb-2">
-              <listMenus @on-menu-selected="onMenuSelected" />
+              <!-- <listMenus @on-menu-selected="onItemSelected" /> -->
             </div>
 
             <button @click="saveChange(item)">
@@ -66,7 +63,7 @@
     v-else
     class="text-center pr-4 p-4 grow"
   >
-    <p>Select a menu to see details</p>
+    <p>Select a item to see details</p>
   </div>
 </template>
 
@@ -82,85 +79,76 @@ import { toast } from 'vue3-toastify'
 
 const route = useRoute()
 const router = useRouter()
-const menuId = ref(route.params.id)
+const itemId = ref(route.params.id)
 
 
 const item = ref(null)
-const parent = ref([])
+const child = ref([])
 
-const onMenuSelected = selected => {
+const onItemSelected = selected => {
   console.log('selected', selected)
-  parent.value = selected
+  child.value = selected
 }
-watch(parent.value, (newValue, oldValue) => {
+watch(child.value, (newValue, oldValue) => {
   console.log('child changed', newValue, oldValue)
 })
 
-const getMenu = async () => {
+const getItem = async () => {
   try {
-    const docRef = doc(db, 'menus', menuId.value)
-    const menuDoc = await getDoc(docRef)
-    if (!menuDoc.exists()) {
+    const docRef = doc(db, 'items', itemId.value)
+    const itemDoc = await getDoc(docRef)
+    if (!itemDoc.exists()) {
       console.log('No such document!')
     } else {
-      menu.value = menuDoc.data()
+      item.value = itemDoc.data()
     }
   } catch (err) {
     console.log(err)
   }
 }
 onMounted(() => {
-  if (menuId.value) {
-    getMenu()
+  if (itemId.value) {
+    getItem()
   }
 })
 
 
 watch(() => route.params.id, newId => {
-  menuId.value = newId
+  itemId.value = newId
   if(newId) {
-    getMenu()
+    getItem()
   } else {
     console.log('not such menu')
   }
 }, { immediate: true })
 
-const deleteMenu = async menu => {
+const deleteItem = async item => {
   try {
     const batch = writeBatch(db)
-    // удаление самого меню
-    batch.delete(doc(db, 'menus', menu.id))
 
-    // Получаем ссылку на коллекцию 'items'
-    const itemsRef = collection(db, 'items')
-    // Получаем все документы из коллекции 'items'
-    const querySnapshot = await getDocs(itemsRef)
-    // Проходим по каждому документу
+    // Удаление элемента item из коллекции items
+    batch.delete(doc(db, 'items', route.params.id))
+
+    // Обновление childId в коллекции menus
+    const menusRef = collection(db, 'menus')
+    const querySnapshot = await getDocs(menusRef)
+
     querySnapshot.forEach(async doc => {
-    // Получаем значение 'parentId' из документа
-    const parentId = doc.data().parentId
-    console.log('parentId', parentId)
-    console.log(`Document with ID ${doc.id} has parentId ${JSON.stringify(parentId)}`)
-    // Находим индекс элемента в 'parentId', который содержит значение 'menu.id'
-    const indexToRemove = parentId.findIndex(item => item.id === menu.id)
-    // Если индекс найден, то удаляем элемент
-    if (indexToRemove !== -1) {
-    parentId.splice(indexToRemove, 1)
-    console.log(`Document with ID ${doc.id} has parentId ${JSON.stringify(parentId)} after removing ${menu.id}`)
-    await updateDoc(doc.ref, { parentId })
-    }
+      const childId = doc.data().childId
+      const indexToRemove = childId.findIndex(item => item.itemId === route.params.id)
+
+      if (indexToRemove !== -1) {
+        childId.splice(indexToRemove, 1)
+        await updateDoc(doc.ref, { childId })
+      }
     })
 
     await batch.commit()
+
     router.push('/menus-management')
-    toast('Menu Deleted !', {
-      autoClose: 1000,
-    })
+    toast('Menu Deleted!', { autoClose: 1500 })
   } catch (error) {
     console.error(error)
-    toast('Error !', {
-      autoClose: 1000,
-    })
   }
 }
 
@@ -194,4 +182,4 @@ const saveChange = async menu => {
 }
 </script>
 
-<style lang="sass" scoped></style> -->
+<style lang="sass" scoped></style>

@@ -31,7 +31,7 @@ const routes = [
       {
         path: 'items/:id',
         name: 'items-detail',
-        component: () => import('../components/ShowData.vue'),
+        component: () => import('../components/Items/ItemsDetail.vue'),
         meta: {
           requiresAuth: true,
         },
