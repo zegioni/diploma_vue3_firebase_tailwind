@@ -30,8 +30,7 @@
 </template>
 
 <script setup>
-import { useCollection } from 'vuefire';
-import { collection, getDoc, doc, addDoc, updateDoc } from 'firebase/firestore';
+import { collection, getDoc, doc, addDoc, updateDoc, query, where, onSnapshot } from 'firebase/firestore';
 import { db, auth } from '@/firebase/config';
 import router from '@/router';
 import { useRoute } from 'vue-router';
@@ -39,7 +38,11 @@ import { reactive, onMounted } from 'vue';
 import { ref, watch } from 'vue';
 import { toast } from 'vue3-toastify';
 
-const items = useCollection(collection(db, 'items'));
+const user = JSON.parse(localStorage.getItem('user'));
+const userId = user ? user.uid : null;
+
+const items = ref([]);
+
 const route = useRoute();
 const activeItem = ref(null);
 
@@ -58,8 +61,9 @@ const showItem = () => {
 const createItem = async () => {
   const user = auth.currentUser;
   try {
-    toast('Item Created !', {
-      autoClose: 1000,
+    toast.success('Item Create Success!', {
+      autoClose: 700,
+      theme: 'dark',
     });
     const itemRef = collection(db, 'items');
     const newItem = {
@@ -77,8 +81,9 @@ const createItem = async () => {
     open(newItem);
   } catch (error) {
     console.log(error);
-    toast('Item Created Error !', {
-      autoClose: 1000,
+    toast.error('Item Create Error!', {
+      autoClose: 700,
+      theme: 'dark',
     });
   }
 };
@@ -94,6 +99,22 @@ const open = item => {
 };
 
 onMounted(async () => {
+    const q = query(collection(db, 'items'), where('createdBy', '==', userId));
+  const unsubscribe = onSnapshot(q, querySnapshot => {
+    const itemList = [];
+    querySnapshot.forEach(doc => {
+      const data = doc.data();
+      itemList.push({
+        id: doc.id,
+        parentId: data.parentId,
+        title: data.title,
+        description: data.description,
+        createdAt: data.createdAt,
+        createdBy: data.createdBy,
+      });
+    });
+    items.value = itemList;
+  });
   try {
     const itemId = route.params.id;
     if (itemId) {
@@ -111,6 +132,7 @@ onMounted(async () => {
   } catch (error) {
     console.error(error);
   }
+   return unsubscribe;
 });
 
 watch(

@@ -82,11 +82,16 @@ export default {
           password: password.value,
         });
         router.push('/login');
-        toast('Success', {
-          autoClose: 1000,
+        toast.success('SignUp Success!', {
+          autoClose: 700,
+          theme: 'dark',
         });
       } catch (err) {
         error.value = err.message;
+        toast.error('SignUp Error!', {
+        autoClose: 700,
+        theme: 'dark',
+    });
       }
     };
 

@@ -145,13 +145,15 @@ const deleteMenu = async menu => {
 
     await batch.commit();
     router.push('/menus-management');
-    toast('Menu Deleted !', {
-      autoClose: 1000,
+    toast.success('Menu Delete!', {
+      autoClose: 700,
+      theme: 'dark',
     });
   } catch (error) {
     console.error(error);
-    toast('Error !', {
-      autoClose: 1000,
+    toast.error('Menu Delete!', {
+      autoClose: 700,
+      theme: 'dark',
     });
   }
 };
@@ -213,13 +215,15 @@ const saveChange = async menu => {
     });
     await batch.commit();
     child.value = [];
-    toast('Success', {
-      autoClose: 1000,
+    toast.success('Save Success!', {
+      autoClose: 700,
+      theme: 'dark',
     });
   } catch (error) {
     console.error(error);
-    toast('Error', {
-      autoClose: 1000,
+    toast.error('Save Error!', {
+      autoClose: 700,
+      theme: 'dark',
     });
   }
 };

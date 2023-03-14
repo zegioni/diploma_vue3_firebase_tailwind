@@ -4,13 +4,13 @@
       <div class="flex justify-between">
         <div class="flex-shrink-0">
           <div class="flex items-center h-full">
-            <span class="text-center"><img src="@/assets/icons/free-animated-icon-settings-87-unscreen.png" style="width: 50px;"></span>
-            <RouterLink
-              to="/menus-view"
-              class="ml-1"
+            <span class="text-center"><img src="@/assets/icons/free-animated-icon-settings-87-unscreen.gif" style="width: 50px;"></span>
+            <input
+              class="ml-3 mt-1 px-3 py-2 bg-zinc-600 text-emerald-50 placeholder-zinc-300 focus:outline-none focus:border-sky-500 focus:ring-sky-500 block w-full rounded-md text-xl focus:ring-1"
+              type="email"
+              value="Resturant"
+              disabled
             >
-              Menus
-            </RouterLink>
           </div>
         </div>
         <div class="ml-4 flex-shrink-0">

@@ -31,7 +31,7 @@
 
 <script setup>
 import { useCollection } from 'vuefire';
-import { collection, getDoc, doc, addDoc, updateDoc } from 'firebase/firestore';
+import { collection, getDoc, doc, addDoc, updateDoc, query, where, getDocs, onSnapshot } from 'firebase/firestore';
 import { db, auth } from '@/firebase/config';
 import router from '@/router';
 import { useRoute } from 'vue-router';
@@ -39,7 +39,11 @@ import { reactive, onMounted } from 'vue';
 import { ref, watch } from 'vue';
 import { toast } from 'vue3-toastify';
 
-const menus = useCollection(collection(db, 'menus'));
+const user = JSON.parse(localStorage.getItem('user'));
+const userId = user ? user.uid : null;
+
+const menus = ref([]);
+
 const route = useRoute();
 const activeMenu = ref(null);
 
@@ -58,8 +62,9 @@ const showMenu = () => {
 const createMenu = async () => {
   const user = auth.currentUser;
   try {
-    toast('Menu Created !', {
-      autoClose: 1000,
+    toast.success('Menu Created!', {
+      autoClose: 700,
+      theme: 'dark',
     });
     const menuRef = collection(db, 'menus');
     const newMenu = {
@@ -77,8 +82,9 @@ const createMenu = async () => {
     open(newMenu);
   } catch (error) {
     console.log(error);
-    toast('Menu Created Error !', {
-      autoClose: 1000,
+    toast.error('Menu Created Error!', {
+      autoClose: 700,
+      theme: 'dark',
     });
   }
 };
@@ -94,6 +100,22 @@ const open = menu => {
 };
 
 onMounted(async () => {
+  const q = query(collection(db, 'menus'), where('createdBy', '==', userId));
+  const unsubscribe = onSnapshot(q, querySnapshot => {
+    const menuList = [];
+    querySnapshot.forEach(doc => {
+      const data = doc.data();
+      menuList.push({
+        id: doc.id,
+        childId: data.childId,
+        title: data.title,
+        description: data.description,
+        createdAt: data.createdAt,
+        createdBy: data.createdBy,
+      });
+    });
+    menus.value = menuList;
+  });
   try {
     const menuId = route.params.id;
     if (menuId) {
@@ -111,6 +133,7 @@ onMounted(async () => {
   } catch (error) {
     console.error(error);
   }
+  return unsubscribe;
 });
 
 watch(

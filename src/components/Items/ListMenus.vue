@@ -62,17 +62,24 @@ const showMenuList = ref(false);
 const itemId = ref(route.params.id);
 const emits = defineEmits(['on-menu-selected']);
 
+const user = JSON.parse(localStorage.getItem('user'));
+const userId = user ? user.uid : null;
+
 const getMenuList = async () => {
   const querySnapshot = await getDocs(collection(db, 'menus'));
   const list = [];
   querySnapshot.forEach(doc => {
+    const createdBy = doc.data().createdBy;
+    if (createdBy === userId) {
       const getList = {
         id: doc.data().id,
         title: doc.data().title,
         childId: doc.data().childId
       };
-      list.push(getList);
-      //console.log(doc.id, ' => ', doc.data())
+    list.push(getList);
+  } else {
+    console.log('no such item');
+  }
   });
   menuList.value = list;
   // Get selected menus based on parentId

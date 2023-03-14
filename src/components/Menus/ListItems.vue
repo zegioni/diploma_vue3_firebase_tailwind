@@ -50,7 +50,7 @@
 <script setup>
 import { ref } from 'vue';
 import { defineEmits, onMounted, watch } from 'vue';
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, getDocs, query, where, onSnapshot } from 'firebase/firestore';
 import { db } from '@/firebase/config';
 import { useRoute } from 'vue-router';
 
@@ -63,17 +63,24 @@ const showItemList = ref(false);
 const menuId = ref(route.params.id);
 const emits = defineEmits(['on-item-selected']);
 
+const user = JSON.parse(localStorage.getItem('user'));
+const userId = user ? user.uid : null;
+
 const getItemList = async () => {
   const querySnapshot = await getDocs(collection(db, 'items'));
   const list = [];
   querySnapshot.forEach(doc => {
-    const getList = {
-      id: doc.data().id,
-      title: doc.data().title,
-      parentId: doc.data().parentId,
-    };
+    const createdBy = doc.data().createdBy;
+    if (createdBy === userId) {
+      const getList = {
+        id: doc.data().id,
+        title: doc.data().title,
+        parentId: doc.data().parentId
+      };
     list.push(getList);
-    //console.log(doc.id, ' => ', doc.data())
+  } else {
+    console.log('no such item');
+  }
   });
   itemList.value = list;
   // Get selected items based on parentId

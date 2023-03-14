@@ -45,7 +45,7 @@
             </div>
 
             <div class="space-y-2 mb-2">
-              Add item to items
+              Add menu to item
             </div>
             <div class="space-y-2 mb-2">
               <listMenus @on-menu-selected="onMenuSelected" />
@@ -74,15 +74,9 @@ import {
   getDoc,
   getDocs,
   writeBatch,
-  arrayRemove,
-  onSnapshot,
   updateDoc,
   arrayUnion,
   collection,
-  where,
-  query,
-  deleteDoc,
-collectionGroup,
 } from 'firebase/firestore';
 import { ref, watch, onMounted} from 'vue';
 import { useRoute, useRouter } from 'vue-router';
@@ -165,13 +159,15 @@ const deleteItem = async item => {
 
     await batch.commit();
     router.push('/menus-management');
-    toast('Menu Deleted !', {
-      autoClose: 1000,
+    toast.success('Item Delete!', {
+      autoClose: 700,
+      theme: 'dark',
     });
   } catch (error) {
     console.error(error);
-    toast('Error !', {
-      autoClose: 1000,
+    toast.error('Item Delete Error!', {
+      autoClose: 700,
+      theme: 'dark',
     });
   }
 };
@@ -238,14 +234,16 @@ const saveChange = async item => {
 
       await batch.commit();
       parent.value = [];
-      toast('Success', {
-        autoClose: 1000,
-      });
+      toast.success('Save Success!', {
+      autoClose: 700,
+      theme: 'dark',
+    });
     }
   } catch (error) {
     console.error(error);
-    toast('Error', {
-      autoClose: 1000,
+    toast.error('Save Error!', {
+      autoClose: 700,
+      theme: 'dark',
     });
   }
 };
