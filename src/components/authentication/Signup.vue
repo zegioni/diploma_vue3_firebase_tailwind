@@ -61,38 +61,38 @@
 </template>
 
 <script>
-import { ref } from 'vue'
-import { useStore } from 'vuex'
-import { useRouter } from 'vue-router'
-import { toast } from 'vue3-toastify'
+import { ref } from 'vue';
+import { useStore } from 'vuex';
+import { useRouter } from 'vue-router';
+import { toast } from 'vue3-toastify';
 
 export default {
   setup() {
-    const email = ref('')
-    const password = ref('')
-    const error = ref(null)
+    const email = ref('');
+    const password = ref('');
+    const error = ref(null);
 
-    const store = useStore()
-    const router = useRouter()
+    const store = useStore();
+    const router = useRouter();
 
     const handleSubmit = async () => {
       try {
         await store.dispatch('signup', {
           email: email.value,
           password: password.value,
-        })
-        router.push('/login')
+        });
+        router.push('/login');
         toast('Success', {
           autoClose: 1000,
-        })
+        });
       } catch (err) {
-        error.value = err.message
+        error.value = err.message;
       }
-    }
+    };
 
-    return { handleSubmit, email, password, error }
+    return { handleSubmit, email, password, error };
   },
-}
+};
 </script>
 
 <style lang="sass" scoped>

@@ -29,11 +29,11 @@
 </template>
 
 <script setup>
-import { useCollection } from 'vuefire'
-import { collection } from 'firebase/firestore'
-import { db } from '@/firebase/config'
+import { useCollection } from 'vuefire';
+import { collection } from 'firebase/firestore';
+import { db } from '@/firebase/config';
 
-const posts = useCollection(collection(db, 'posts'))
+const posts = useCollection(collection(db, 'posts'));
 </script>
 
 <style lang="sass" scoped>

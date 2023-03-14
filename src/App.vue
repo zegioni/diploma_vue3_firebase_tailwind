@@ -5,25 +5,28 @@
 </template>
 
 <script>
-export default {}
+export default {};
 </script>
 
 <style lang="sass">
 body
-  background-color: #c7d2fe;
-  color: #0f172a
+  background-color: #18181b
+  color: #f0fdfa
 
 a 
-  color: #0f172a !important
+  color: #f0fdfa !important
 
 .router-link-active
-  color: #0f172a
+  color: #f0fdfa
+  background-color: #10b981
 
 .router-link-exact-active
-  color: #0f172a
+  color: #f0fdfa
+  background-color: #10b981
+
 
 .text-truncate
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  white-space: nowrap
+  overflow: hidden
+  text-overflow: ellipsis
 </style>

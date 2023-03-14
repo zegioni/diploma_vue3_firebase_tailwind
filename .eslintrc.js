@@ -12,12 +12,12 @@ module.exports = {
     'no-console': process.env.NODE_ENV === 'production' ? 'error' : 'off',
     'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
 
-    semi: ['error', 'never'],
     'max-len': 'off',
     'linebreak-style': 'off',
     'quotes': [2, 'single', { 'avoidEscape': true }],
+    'semi': [2, 'always'],
     camelcase: ['error', { properties: 'never', ignoreDestructuring: true, ignoreImports: true }],
     'arrow-parens': ['error', 'as-needed'],
     'vue/multi-word-component-names': 'off', 
   },
-}
+};

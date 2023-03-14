@@ -62,44 +62,44 @@
 </template>
 
 <script>
-import { ref, onMounted } from 'vue'
-import { useStore } from 'vuex'
-import { useRouter } from 'vue-router'
+import { ref, onMounted } from 'vue';
+import { useStore } from 'vuex';
+import { useRouter } from 'vue-router';
 
 export default {
   setup() {
-    const email = ref('')
-    const password = ref('')
-    const error = ref(null)
+    const email = ref('');
+    const password = ref('');
+    const error = ref(null);
 
-    const store = useStore()
-    const router = useRouter()
+    const store = useStore();
+    const router = useRouter();
 
     const handleSubmit = async () => {
       try {
         await store.dispatch('login', {
           email: email.value,
           password: password.value,
-        })
-        router.push('/menus-management')
+        });
+        router.push('/menus-management');
       } catch (err) {
-        error.value = err.message
+        error.value = err.message;
       }
-    }
+    };
     const checkUser = store => {
-      const user = localStorage.getItem('user')
+      const user = localStorage.getItem('user');
       // console.log("userLogin", user);
       if (user) {
-        store.commit('setUser', JSON.parse(user))
-        router.push('/menus-management')
+        store.commit('setUser', JSON.parse(user));
+        router.push('/menus-management');
       }
-    }
+    };
 
-    onMounted(() => checkUser(store))
+    onMounted(() => checkUser(store));
 
-    return { handleSubmit, email, password, error }
+    return { handleSubmit, email, password, error };
   },
-}
+};
 </script>
 
 <style lang="sass" scoped>

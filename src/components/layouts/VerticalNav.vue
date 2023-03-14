@@ -1,31 +1,49 @@
 <!-- eslint-disable prettier/prettier -->
 <template>
-  <nav class="flex my-8">
-    <div class="bg-indigo-50 shadow-lg">
+  <nav class="flex my-8 h-[48rem]">
+    <div class="bg-zinc-700 shadow-lg rounded-md">
       <div class="text-center p-4">
         Admin
       </div>
       <div class="w-230">
         <router-link
           to="/menus-management"
-          class="space-y-2 mb-2 w-full w-230 bg-indigo-300 p-2 block"
+          class="space-y-2 mb-2 w-full w-230 p-2 block"
         >
           Menus
         </router-link>
       </div>
+      <div class="w-230">
+        <router-link
+          to="/restaurant-settings"
+          class="space-y-2 mb-2 w-full w-230 p-2 block"
+        >
+          Restaurant
+        </router-link>
+      </div>
     </div>
-    <ShowData />
+    <div v-if="$route.path.includes('/menus-management')">
+      <ShowData />
+    </div>
+    <div
+      v-if="$route.path.includes('/restaurant-settings')"
+      class="grow"
+    >
+      <RestaurantSettings />
+    </div>
   </nav>
 </template>
 
 <script>
-import ShowData from '@/components/ShowData.vue'
+import ShowData from '@/components/ShowData.vue';
+import RestaurantSettings from '@/components/RestaurantSettings/RestaurantSettings.vue';
 
 export default {
   components: {
     ShowData,
+    RestaurantSettings,
   },
-}
+};
 </script>
 
 <style lang="sass" scoped>

@@ -1,10 +1,10 @@
 <template>
-  <nav class="bg-indigo-50 shadow-lg mx-15 px-15 py-4">
-    <div class="max-w-7xl mx-auto px-4">
+  <nav class="bg-zinc-700 shadow-lg mx-15 px-15 py-4 rounded-md">
+    <div class="max-w- px-4">
       <div class="flex justify-between">
         <div class="flex-shrink-0">
           <div class="flex items-center h-full">
-            <span class="text-center">Nikita</span>
+            <span class="text-center"><img src="@/assets/icons/free-animated-icon-settings-87-unscreen.png" style="width: 50px;"></span>
             <RouterLink
               to="/menus-view"
               class="ml-1"
@@ -15,7 +15,7 @@
         </div>
         <div class="ml-4 flex-shrink-0">
           <button
-            class="bg-indigo-300 hover:bg-gray-700 text-white py-2 px-4 rounded"
+            class="bg-emerald-500 hover:bg-emerald-600 text-emerald-50 py-2 px-4 rounded"
             @click="logoutAndRedirect"
           >
             Log Out
@@ -27,7 +27,7 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex'
+import { mapGetters, mapActions } from 'vuex';
 
 export default {
   computed: {
@@ -36,10 +36,10 @@ export default {
   methods: {
     ...mapActions(['logout']),
     async logoutAndRedirect() {
-      await this.$store.dispatch('logout', { router: this.$router })
+      await this.$store.dispatch('logout', { router: this.$router });
     },
   },
-}
+};
 </script>
 
 <style lang="sass" scoped></style>
