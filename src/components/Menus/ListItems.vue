@@ -6,13 +6,13 @@
       type="text"
       name="select-items"
       readonly
-      class="mt-1 px-3 py-2 bg-zinc-500 placeholder-slate-400 focus:outline-none focus:border-sky-500 focus:ring-sky-500 block w-full rounded-md sm:text-sm focus:ring-1"
+      class="mt-1 px-3 py-2 bg-slate-50 placeholder-slate-50 focus:outline-none focus:border-sky-500 focus:ring-sky-500 block w-full rounded-md sm:text-sm focus:ring-1"
       @focus="showItems"
       @blur="hideItems"
     >
     <div
       v-show="showItemList"
-      class="mt-4 rounded-md bg-zinc-500"
+      class="mt-4 rounded-md bg-slate-50"
     >
       <template v-if="itemList.length">
         <div
@@ -24,7 +24,7 @@
             :for="`item-${index}`"
             class="flex items-center justify-between"
           >
-            <span class="text-lg font-medium text-emerald-50">{{
+            <span class="text-lg font-medium text-slate-900">{{
               item.title
             }}</span>
             <input
@@ -39,7 +39,7 @@
         </div>
       </template>
       <template v-else>
-        <div class="px-4 py-3 text-emerald-50">
+        <div class="px-4 py-3 bg-slate-900">
           No such items
         </div>
       </template>

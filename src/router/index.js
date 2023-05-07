@@ -47,6 +47,14 @@ const routes = [
     },
   },
   {
+    path: '/menu-preview',
+    name: 'menu-preview',
+    component: () => import('../views/Loyouts.vue'),
+    meta: {
+      requiresAuth: true,
+    },
+  },
+  {
     path: '/signup',
     name: 'Signup',
     component: () => import('../components/authentication/Signup.vue'),

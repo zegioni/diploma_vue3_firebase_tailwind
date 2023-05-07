@@ -1,7 +1,7 @@
 <!-- eslint-disable prettier/prettier -->
 <template>
   <nav class="flex my-8 h-[48rem]">
-    <div class="bg-zinc-700 shadow-lg rounded-md">
+    <div class="bg-slate-100 shadow-lg rounded-md">
       <div class="text-center p-4">
         Admin
       </div>
@@ -21,6 +21,14 @@
           Restaurant
         </router-link>
       </div>
+      <div class="w-230">
+        <router-link
+          to="/menu-preview"
+          class="space-y-2 mb-2 w-full w-230 p-2 block"
+        >
+          Menu Preview
+        </router-link>
+      </div>
     </div>
     <div v-if="$route.path.includes('/menus-management')">
       <ShowData />
@@ -31,17 +39,25 @@
     >
       <RestaurantSettings />
     </div>
+    <div
+      v-if="$route.path.includes('/menu-preview')"
+      class="grow"
+    >
+      <MenuPreview />
+    </div>
   </nav>
 </template>
 
 <script>
 import ShowData from '@/components/ShowData.vue';
 import RestaurantSettings from '@/components/RestaurantSettings/RestaurantSettings.vue';
+import MenuPreview from '../preview/MenuPreview.vue';
 
 export default {
   components: {
     ShowData,
     RestaurantSettings,
+    MenuPreview
   },
 };
 </script>

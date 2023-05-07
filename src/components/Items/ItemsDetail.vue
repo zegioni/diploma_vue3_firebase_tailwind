@@ -43,6 +43,17 @@
                 class="mt-1 px-3 py-2 bg-zinc-500 placeholder-slate-400 focus:outline-none focus:border-sky-500 focus:ring-sky-500 block w-full rounded-md sm:text-sm focus:ring-1"
               >
             </div>
+            <div class="space-y-2 mb-2">
+              Price
+            </div>
+            <div class="space-y-2 mb-2">
+              <input
+                id="title"
+                v-model="item.price"
+                type="text"
+                class="mt-1 px-3 py-2 bg-zinc-500 placeholder-slate-400 focus:outline-none focus:border-sky-500 focus:ring-sky-500 block w-full rounded-md sm:text-sm focus:ring-1"
+              >
+            </div>
 
             <div class="space-y-2 mb-2">
               Add menu to item
@@ -184,6 +195,7 @@ const saveChange = async item => {
       batch.update(itemDocRef, {
         title: item.title,
         description: item.description,
+        price: item.price,
         updatedAt: new Date(),
         parentId: parentIds.map(id => ({ id })),
       });

@@ -19,7 +19,7 @@
         class="text-truncate p-2"
         :class="{
           'space-y-2 bg-emerald-500': item.id === activeItem,
-          'text-emerald-50': item.id !== activeItem,
+          'text-slate-900': item.id !== activeItem,
         }"
         @click="open(item)"
       >

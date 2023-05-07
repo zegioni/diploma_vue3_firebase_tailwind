@@ -10,11 +10,8 @@ export default {};
 
 <style lang="sass">
 body
-  background-color: #18181b
-  color: #f0fdfa
-
-a 
-  color: #f0fdfa !important
+  background-color: #e2e8f0
+  color: #0f172a
 
 .router-link-active
   color: #f0fdfa
@@ -23,6 +20,7 @@ a
 .router-link-exact-active
   color: #f0fdfa
   background-color: #10b981
+
 
 
 .text-truncate

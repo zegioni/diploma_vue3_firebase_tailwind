@@ -19,7 +19,7 @@
         class="text-truncate p-2"
         :class="{
           'space-y-2 bg-emerald-500': menu.id === activeMenu,
-          'text-emerald-50': menu.id !== activeMenu,
+          'text-slate-900': menu.id !== activeMenu,
         }"
         @click="open(menu)"
       >
