@@ -10,7 +10,7 @@
             ></span>
             <input
               v-model="restaurantTitle"
-              class="ml-3 mt-1 px-3 py-2 bg-zinc-600 text-emerald-50 placeholder-zinc-300 focus:outline-none focus:border-sky-500 focus:ring-sky-500 block w-full rounded-md text-xl focus:ring-1"
+              class="ml-3 mt-1 px-3 py-2 bg-slate-50 text-slate-900 placeholder-zinc-300 focus:outline-none focus:border-sky-500 focus:ring-sky-500 block w-full rounded-md text-xl focus:ring-1"
               type="text"
               disabled
             >
