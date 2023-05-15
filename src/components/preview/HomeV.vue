@@ -24,8 +24,8 @@
               class="rest-description text-center mt-4 h-[50px] overflow-hidden"
             >
               <p
-                class="h-full w-[300px] m-[15px] flex-wrap"
-                style="overflow-wrap: anywhere"
+                class="h-full w-[350px] flex-wrap homeDescription"
+                style="overflow-wrap: anywhere display: flex; overflow-y: scroll; scrollbar-width: none; padding-left: 15px; padding-right: 15px;"
               >
                 {{ description }}
               </p>
@@ -36,6 +36,7 @@
               class="rest-information flex justify-center mt-4 px-15 mb-[15px]"
             >
               <a
+                v-if="phoneNumber"
                 :href="'tel:' + phoneNumber"
                 class="rest-phone mr-6"
               >
@@ -46,6 +47,7 @@
                 >
               </a>
               <a
+                v-if="emailAddress"
                 :href="'mailto:' + emailAddress"
                 class="rest-email"
               >
@@ -115,6 +117,10 @@ onMounted(() => {
 </script>
 
 <style lang="scss" scoped>
+
+.homeDescription::-webkit-scrollbar {
+  display: none; /* для скрытия полосы прокрутки в Chrome, Safari и Opera */
+}
 .images {
   background-image: url(@/assets/img/bg-rest.jpg);
   background-position: center;
@@ -127,9 +133,6 @@ onMounted(() => {
   position: absolute;
   width: 100%;
   top: 48%;
-}
-.rest-menu-btn--selected {
-  background-color: red !important; /* здесь можно задать стили для выделенного меню */
 }
 .header-nav {
   margin-left: 15px;

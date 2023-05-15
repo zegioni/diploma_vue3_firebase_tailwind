@@ -20,12 +20,13 @@
         <div class="py-4 px-5">
           <div class="flex justify-evenly flex-col">
             <label class="mb-2">Restaurant Description</label>
-            <input
+            <textarea
               v-model="restaurantDescription"
+              rows="4" cols="50"
               class="mt-1 px-3 py-2 bg-slate-50 text-slate-900 placeholder-slate-300 focus:outline-none focus:border-sky-500 focus:ring-sky-500 block w-full rounded-md text-xl focus:ring-1"
-              type="email"
               placeholder="Restaurant Description"
-            >
+              style="resize: none;"
+            />
             <label class="mb-2">Restaurant Address</label>
             <input
               v-model="restaurantEmailAddress"
@@ -39,20 +40,6 @@
               class="mt-1 px-3 py-2 bg-slate-50 text-slate-900 placeholder-slate-300 focus:outline-none focus:border-sky-500 focus:ring-sky-500 block w-full rounded-md text-xl focus:ring-1"
               type="phone"
               placeholder="Restaurant Phone"
-            >
-            <label class="mb-2">Restaurant Type</label>
-            <input
-              v-model="restaurantType"
-              class="mt-1 px-3 py-2 bg-slate-50 text-slate-900 placeholder-slate-300 focus:outline-none focus:border-sky-500 focus:ring-sky-500 block w-full rounded-md text-xl focus:ring-1"
-              type="text"
-              placeholder="Restaurant Type"
-            >
-            <label class="mb-2">Type of Cuisine</label>
-            <input
-              v-model="cuisineType"
-              class="mt-1 px-3 py-2 bg-slate-50 text-slate-900 placeholder-slate-300 focus:outline-none focus:border-sky-500 focus:ring-sky-500 block w-full rounded-md text-xl focus:ring-1"
-              type="text"
-              placeholder="Restaurant Type of Cuisine"
             >
           </div>
         </div>
@@ -90,8 +77,6 @@ const restaurantTitle = ref('');
 const restaurantDescription = ref('');
 const restaurantEmailAddress = ref('');
 const restaurantPhoneNumber = ref('');
-const restaurantType = ref('');
-const cuisineType = ref('');
 
 const user = JSON.parse(localStorage.getItem('user'));
 const userId = user ? user.uid : null;
@@ -106,8 +91,6 @@ const getRestaurantSettings = async () => {
     restaurantDescription.value = data.description;
     restaurantEmailAddress.value = data.emailAddress;
     restaurantPhoneNumber.value = data.phoneNumber;
-    restaurantType.value = data.type;
-    cuisineType.value = data.cuisine;
   } else {
     // Если документ не существует, создайте его и установите начальные значения ввода
     await setDoc(docRef, {
@@ -115,8 +98,6 @@ const getRestaurantSettings = async () => {
       description: '',
       emailAddress: '',
       phoneNumber: '',
-      type: '',
-      cuisine: '',
       createdBy: user.uid,
       createdAt: new Date(),
     });
@@ -132,8 +113,6 @@ const saveRestaurantSettings = async () => {
     description: restaurantDescription.value,
     emailAddress: restaurantEmailAddress.value,
     phoneNumber: restaurantPhoneNumber.value,
-    type: restaurantType.value,
-    cuisine: cuisineType.value,
   });
   console.log('Document updated');
 };
