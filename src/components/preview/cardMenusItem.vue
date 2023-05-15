@@ -1,38 +1,40 @@
 <template>
   <div v-if="!itemsIdMenu || itemsIdMenu.length === 0">
     <div class="text-center">
-      Nothing is selected or the menu is empty
+      Nothing is selected
     </div>
   </div>
   <div v-else>
-    <div class="text-center m-[15px] menu-description">
-      {{ descriptionMenu }}
-    </div>
-    <div
-      v-for="item in items"
-      :key="item.id"
-      class="card"
-    >
-      <div class="card-body">
-        <div class="card-img">
-          <img
-            src="https://placehold.jp/72x72.png"
-            alt=""
-          >
-        </div>
-        <div class="card-information">
-          <div class="card-title">
-            {{ item.title }}
+    <div>
+      <div class="text-center m-[15px] menu-description">
+        {{ descriptionMenu }}
+      </div>
+      <div
+        v-for="item in items"
+        :key="item.id"
+        class="card"
+      >
+        <div class="card-body">
+          <div class="card-img">
+            <img
+              src="https://placehold.jp/72x72.png"
+              alt=""
+            >
           </div>
-          <div class="card-description">
-            {{ item.description }}
-          </div>
-          <div class="card-group">
-            <div class="card-price">
-              $ {{ item.price }}
+          <div class="card-information">
+            <div class="card-title">
+              {{ item.title }}
             </div>
-            <div class="card-add">
-              +
+            <div class="card-description">
+              {{ item.description }}
+            </div>
+            <div class="card-group">
+              <div class="card-price">
+                $ {{ item.price }}
+              </div>
+              <div class="card-add">
+                +
+              </div>
             </div>
           </div>
         </div>
@@ -71,6 +73,7 @@ const items = ref([]);
 watch(
   () => props.itemsIdMenu,
   newValue => {
+    console.log('newValue :>> ', newValue);
     itemsIdMenu.value = newValue;
     itemsIdMenu.value &&
       itemsIdMenu.value.forEach(item => {
