@@ -51,7 +51,7 @@
 <script>
 import ShowData from '@/components/ShowData.vue';
 import RestaurantSettings from '@/components/RestaurantSettings/RestaurantSettings.vue';
-import MenuPreview from '../preview/MenuPreview.vue';
+import MenuPreview from '../preview/HomeV.vue';
 
 export default {
   components: {

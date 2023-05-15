@@ -60,7 +60,8 @@ const props = defineProps({
   },
   descriptionMenu: {
       type: String,
-      required: true,
+      required: false,
+      default: '',
     },
 });
 

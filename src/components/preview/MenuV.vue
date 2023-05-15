@@ -1,79 +1,6 @@
 <template>
   <div>
     <div
-      v-if="showMenu"
-      class="m-auto w-[390px] pl-4"
-    >
-      <div
-        class="bg-white shadow-lg rounded-md h-[48rem] flex flex-col justify-center relative"
-      >
-        <div class="flex-grow">
-          <img
-            class="absolute h-[300px]"
-            src="@/assets/img/bg-rest.jpg"
-          >
-        </div>
-        <div class="bg-white relative text-black rounded-t-[50px] h-[75%]">
-          <div class="flex flex-col items-center mb-[50px]">
-            <div class="rest-logo">
-              <img
-                class="w-24 pt-[50px]"
-                src="@/assets/logo.png"
-                alt=""
-              >
-            </div>
-            <div class="rest-title text-center mt-4">
-              {{ title }}
-            </div>
-            <div
-              class="rest-description text-center mt-4 h-[130px] overflow-hidden"
-            >
-              <p
-                class="h-full w-[300px] m-[15px] flex-wrap"
-                style="overflow-wrap: anywhere"
-              >
-                {{ description }}
-              </p>
-            </div>
-          </div>
-          <div class="flex flex-col items-center">
-            <div
-              class="rest-information flex justify-center mt-4 px-15 mb-[15px]"
-            >
-              <a
-                :href="'tel:' + phoneNumber"
-                class="rest-phone mr-6"
-              >
-                <img
-                  src="@/assets/img/rest-phone.png"
-                  class="w-[35px]"
-                  alt=""
-                >
-              </a>
-              <a
-                :href="'mailto:' + emailAddress"
-                class="rest-email"
-              >
-                <img
-                  src="@/assets/img/rest-email.png"
-                  class="w-[35px]"
-                  alt=""
-                >
-              </a>
-            </div>
-            <div
-              class="menu mt-4 text-center bg-emerald-500 hover:bg-emerald-600 text-emerald-50 rounded-full p-2 w-[225px]"
-              @click="showMenu = false"
-            >
-              MENU
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div
-      v-else
       class="m-auto w-[390px] pl-4"
     >
       <div
@@ -82,7 +9,7 @@
         <div class="bg-gray-300 h-[105px]">
           <div class="header-nav">
             <div class="rest-title">
-              {{ title }}
+              <div>{{ menuTitle }}</div>
             </div>
             <div class="rest-menu">
               <div
@@ -110,12 +37,12 @@
           />
         </div>
         <div
-          class="bg-white h-[75px] flex justify-between px-[25px] items-center rounded-t-[30px] fixed"
+          class="bg-white h-[75px] flex justify-between px-[25px] items-center rounded-t-[30px]"
           style="bottom: 33px; width: 375px"
         >
           <div
             style="cursor: pointer;"
-            @click="showMenu = true"
+            @click="$emit('closeMenuV')"
           >
             <img
               class="w-[35px]"
@@ -145,39 +72,25 @@
 
 <script setup>
 import cardMenusItem from '@/components/preview/cardMenusItem.vue';
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, defineProps } from 'vue';
 import { collection, getDocs, getDoc, doc } from 'firebase/firestore';
-
 import { db } from '@/firebase/config';
 
-const title = ref('');
-const description = ref('');
-const emailAddress = ref('');
-const phoneNumber = ref('');
+const props = defineProps({
+  menuTitle: {
+    type: String,
+    required: true,
+  },
+});
+
 const menus = ref([]);
-
-const user = JSON.parse(localStorage.getItem('user'));
-const userId = user ? user.uid : null;
-const docRef = doc(db, 'restaurants', userId);
-
 const selectedMenu = ref(null);
 const itemsIdMenu = ref(null);
 const menuDescription = ref(null);
 
-const getRestaurantData = async () => {
-  const docSnap = await getDoc(docRef);
-  if (docSnap.exists()) {
-    // Если документ существует, получите его данные и установите их в значения ввода
-    const data = docSnap.data();
-    title.value = data.title;
-    description.value = data.description;
-    emailAddress.value = data.emailAddress;
-    phoneNumber.value = data.phoneNumber;
-  } else {
-    // Если документ не существует, создайте его и установите начальные значения ввода
-    console.log('NO DATA: ');
-  }
-};
+const user = JSON.parse(localStorage.getItem('user'));
+const userId = user ? user.uid : null;
+const docRef = doc(db, 'restaurants', userId);
 
 const getRestaurantMenus = async () => {
   const querySnapshot = await getDocs(collection(db, 'menus'));
@@ -200,11 +113,9 @@ const getRestaurantMenus = async () => {
 };
 
 onMounted(() => {
-  getRestaurantData();
   getRestaurantMenus();
 });
 
-const showMenu = ref(false);
 
 function selectMenu(menu) {
   selectedMenu.value = menu;
