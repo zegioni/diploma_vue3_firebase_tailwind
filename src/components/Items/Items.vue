@@ -71,6 +71,7 @@ const createItem = async () => {
       parentId: [],
       title: 'New Item',
       description: '',
+      price: null,
       createdAt: new Date(),
       createdBy: user.uid,
     };
@@ -109,6 +110,7 @@ onMounted(async () => {
         parentId: data.parentId,
         title: data.title,
         description: data.description,
+        price: data.price,
         createdAt: data.createdAt,
         createdBy: data.createdBy,
       });

@@ -171,6 +171,10 @@ const deleteItem = async item => {
 };
 
 const saveChange = async item => {
+    const parentIds = parent.value
+    .filter(item => item !== undefined)
+    .map(item => item.id);
+    try {
     const batch = writeBatch(db);
     const itemDocRef = doc(db, 'items', item.id);
     const itemDocSnap = await getDoc(itemDocRef);
@@ -182,7 +186,43 @@ const saveChange = async item => {
         updatedAt: new Date(),
         parentId: parentIds.map(id => ({ id })),
       });
+      const menusRef = collection(db, 'menus');
+      const menusQuerySnapshot = await getDocs(menusRef);
+      menusQuerySnapshot.forEach(async doc => {
+        const childId = doc.data().childId;
+        const indexToUpdate = childId.findIndex(
+          child => child.id === item.id
+        );
+        if (indexToUpdate !== -1) {
+          const newChildId = [
+            ...childId.slice(0, indexToUpdate),
+            ...childId.slice(indexToUpdate + 1),
+          ];
+          await updateDoc(doc.ref, { childId: newChildId });
+        }
+      });
+
+      const validChildIds = parentIds.filter(id => id !== undefined);
+      validChildIds.forEach(id => {
+        batch.update(doc(db, 'menus', id), {
+          childId: arrayUnion({ id: item.id, title: item.title }),
+        });
+      });
+
+      await batch.commit();
+      parent.value = [];
+      toast.success('Save Success!', {
+      autoClose: 700,
+      theme: 'dark',
+    });
     }
+  } catch (error) {
+    console.error(error);
+    toast.error('Save Error!', {
+      autoClose: 700,
+      theme: 'dark',
+    });
+  }
 };
 </script>
 
