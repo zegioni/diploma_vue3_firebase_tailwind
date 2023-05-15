@@ -58,14 +58,20 @@
         </div>
       </div>
     </nav>
-    <div class="text-center">
-      <button
-        class="space-y-2 mb-4 border-2 rounded-lg border-emerald-500 p-2 w-[15rem]"
-        @click="saveRestaurantSettings"
-      >
-        Save
-      </button>
-    </div>
+    <nav class="ml-4 mt-4">
+      <div class="bg-slate-100 shadow-lg rounded-md">
+        <div class="py-4 px-5">
+          <div class="flex flex-col items-center">
+            <button
+              class="space-y-2 border-2 rounded-lg border-emerald-500 p-2 w-[15rem]"
+              @click="saveRestaurantSettings"
+            >
+              Save
+            </button>
+          </div>
+        </div>
+      </div>
+    </nav>
   </div>
 </template>
 
