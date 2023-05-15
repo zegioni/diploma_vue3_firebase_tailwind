@@ -1,19 +1,18 @@
 <template>
   <div>
-    <div
-      class="m-auto w-[390px] pl-4"
-    >
+    <div class="m-auto w-[390px] pl-4">
       <div
-        v-if="currentNavItem == 'menu'"
-        class="bg-white shadow-lg rounded-md h-[48rem] flex flex-col justify-center"
+        v-if="currentNavItem === 'menu'"
+        class="shadow-lg rounded-md h-[48rem] flex flex-col justify-center"
+        style="background-color: #e2e8f0;"
       >
-        <div class="bg-gray-300 h-[105px]">
+        <div class="h-[110px] mt-2 mb-2">
           <div class="header-nav">
             <div class="rest-title">
               <div>{{ menuTitle }}</div>
             </div>
           </div>
-          <div 
+          <div
             ref="menuContainer"
             class="rest-menu"
             style="display: flex; overflow-x: scroll; white-space: nowrap; scrollbar-width: none; padding-left: 15px; padding-right: 15px;"
@@ -38,7 +37,10 @@
             </div>
           </div>
         </div>
-        <div class="flex-grow bg-gray-300">
+        <div
+          class="flex-grow itemsList"
+          style="overflow-x: scroll; white-space: nowrap; scrollbar-width: none;"
+        >
           <cardMenusItem
             :items-id-menu="itemsIdMenu"
             :description-menu="menuDescription"
@@ -81,10 +83,11 @@
         </div>
       </div>
       <div
-        v-if="currentNavItem == 'choice'"
-        class="bg-white shadow-lg rounded-md h-[48rem] flex flex-col justify-center"
+        v-if="currentNavItem === 'choice'"
+        class="shadow-lg rounded-md h-[48rem] flex flex-col justify-center"
+        style="background-color: #e2e8f0;"
       >
-        <div class="flex-grow bg-gray-300">
+        <div class="flex-grow">
           <Choice />
         </div>
       </div>
@@ -176,6 +179,9 @@ const navigate = navItem => {
   if(navItem == 'menu') {
     currentNavItem.value = 'menu';
   } else {
+    selectedMenu.value = [];
+    itemsIdMenu.value = [];
+    menuDescription.value = '';
     currentNavItem.value = 'choice';
   }
 };
@@ -183,11 +189,17 @@ const navigate = navItem => {
 
 <style lang="scss" scoped>
 .rest-menu::-webkit-scrollbar {
-  display: none; /* для скрытия полосы прокрутки в Chrome, Safari и Opera */
+  display: none; /* Hide the scrollbar in Chrome, Safari, and Opera */
 }
+
+.itemsList::-webkit-scrollbar {
+  display: none;
+}
+
 .rest-menu-btn--selected {
-  background-color: #4fd6aa !important; /* здесь можно задать стили для выделенного меню */
+  background-color: #4fd6aa !important; /* Styles for the selected menu */
 }
+
 .header-nav {
   margin-left: 15px;
   margin-right: 15px;
@@ -195,24 +207,28 @@ const navigate = navItem => {
   margin-bottom: 15px;
   color: black;
 }
+
 .rest-title {
   font-size: 18px;
   font-weight: 700;
   margin-bottom: 10px;
 }
+
 .rest-menu {
   display: flex;
 }
+
 .rest-menu-btn {
-  margin-right: 10px;
+  margin-right: 15px;
   background-color: #10b981;
-  padding: 7px;
-  border-radius: 20px;
-  width: 120px;
+  padding: 10px;
+  border-radius: 22px;
+  width: auto;
   text-align: center;
-  &__text {
-    font-size: 15px;
-    color: white;
-  }
+}
+
+.rest-menu-btn__text {
+  font-size: 15px;
+  color: white;
 }
 </style>

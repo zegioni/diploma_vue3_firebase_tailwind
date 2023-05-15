@@ -1,25 +1,18 @@
 <template>
-  <div v-if="!itemsIdMenu || itemsIdMenu.length === 0">
+  <div v-if="!itemsIdMenu || itemsIdMenu.length === 0" class="m-[15px]">
     <div class="text-center">
-      Nothing is selected
+      Empty 🥺
     </div>
   </div>
   <div v-else>
-    <div>
+    <div style="margin-bottom: 100px;">
       <div class="text-center m-[15px] menu-description">
         {{ descriptionMenu }}
       </div>
-      <div
-        v-for="item in items"
-        :key="item.id"
-        class="card"
-      >
+      <div v-for="item in items" :key="item.id" class="card">
         <div class="card-body">
           <div class="card-img">
-            <img
-              src="https://placehold.jp/72x72.png"
-              alt=""
-            >
+            <img src="https://placehold.jp/72x72.png" alt="">
           </div>
           <div class="card-information">
             <div class="card-title">
@@ -151,7 +144,6 @@ const getItems = async id => {
 }
 .card-group {
   display: flex;
-
   justify-content: space-between;
   margin-right: 10px;
 }

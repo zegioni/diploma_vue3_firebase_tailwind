@@ -1,37 +1,50 @@
 <template>
   <div class="template">
-    <div class="header-сhoices">
+    <div class="header-choices">
       <div class="header-item-choices flex items-center">
-        <button class="header-сhoices__back flex items-center justify-center rounded-full text-white w-10 h-10">
+        <button class="header-choices-back flex items-center justify-center rounded-full text-white w-10 h-10">
           &lt;
         </button>
-        <div class="header-сhoices__text flex-grow flex items-center justify-center">
+        <div class="header-choices-text flex-grow flex items-center justify-center">
           Your Choices
         </div>
       </div>
     </div>
     <div class="data-choices">
-      <div class="card-choices__text">
-        <div class="choices__text">
+      <div class="card-choices-text">
+        <div class="choices-text">
           Text
         </div>
       </div>
-      <div class="card-choices__data">
-        <div class="card-choices__items">
-          <div class="card-choices__value">
-            <button class="choices__value__left flex items-center justify-center rounded-full text-white w-10 h-10">
+      <div class="card-choices-data">
+        <div class="card-choices-items">
+          <div class="card-choices-value">
+            <button class="choices-value-left flex items-center justify-center rounded-full text-white w-10 h-10">
               -
             </button>
-            <div class="choices__value__center">
+            <div class="choices-value-center">
               30
             </div>
-            <button class="choices__value__right flex items-center justify-center rounded-full text-white w-10 h-10">
+            <button class="choices-value-right flex items-center justify-center rounded-full text-white w-10 h-10">
               +
             </button>
           </div>
-          <div class="choices__price">
+          <div class="choices-price">
             $0.50
           </div>
+        </div>
+      </div>
+    </div>
+    <div class="order">
+      <div class="order-text">
+        Total
+      </div>
+      <div class="order-price">
+        <div class="order-price-symbol">
+          $
+        </div>
+        <div class="order-price-price">
+          5
         </div>
       </div>
     </div>
@@ -47,13 +60,13 @@
     margin-top: 5px;
 }
 
-.header-сhoices__back {
+.header-choices-back {
     margin: 10px;
     box-shadow: 0 2px 14px rgba(0, 0, 0, 0.1);
     background-color: #10b981;
 }
 
-.header-сhoices__text {
+.header-choices-text {
     font-size: 24px;
     margin-right: 45px;
     font-weight: 700;
@@ -68,43 +81,82 @@
     border-radius: 24px;
 }
 
-.card-choices__text {
-    margin-bottom: 10px
+.card-choices-text {
+    margin-bottom: 10px;
 }
-.choices__text {
+.choices-text {
     font-size: 18px;
     font-weight: 600;
 }
-.card-choices__data {
+.card-choices-data {
     font-size: 20px;
 }
-.card-choices__items {
+.card-choices-items {
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
-.card-choices__value {
+.card-choices-value {
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;
     align-items: center;
 }
-.choices__value__left {
+.choices-value-left {
     background-color: #10b981;
     color: white;
 }
 
-.choices__value__center {
+.choices-value-center {
     margin-right: 10px;
     margin-left: 10px;
 }
 
-.choices__value__right {
+.choices-value-right {
     background-color: #10b981;
     color: white;
 }
-.choices__price {
+.choices-price {
     background-color: transparent;
+}
+
+.order {
+  position: relative;
+  top: 420px;
+
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #10b981;
+  border-radius: 24px;
+  padding: 15px;
+  margin: 15px;
+}
+
+.order-text {
+    /* Add your styles here */
+    color: white;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.order-price {
+    display: flex;
+    flex-direction: row;
+
+    color: white;
+    font-size: 18px;
+}
+
+.order-price-symbol {
+  /* Add your styles here */
+  margin-right: 2px;
+}
+
+.order-price-price {
+    /* Add your styles here */
 }
 
 </style>

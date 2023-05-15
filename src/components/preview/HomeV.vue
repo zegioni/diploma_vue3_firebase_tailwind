@@ -5,7 +5,7 @@
     >
       <div
         v-if="!showMenuV"
-        class="bg-white shadow-lg rounded-md h-[48rem] flex flex-col justify-center relative"
+        class="shadow-lg rounded-md h-[48rem] flex flex-col justify-center relative"
       >
         <div class="flex-grow images" />
         <div class="bg-white absolutePos text-black rounded-t-[50px] h-[52%]">

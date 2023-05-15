@@ -30,7 +30,10 @@
         </router-link>
       </div>
     </div>
-    <div v-if="$route.path.includes('/menus-management')">
+    <div
+      v-if="$route.path.includes('/menus-management')"
+      class="grow"
+    >
       <ShowData />
     </div>
     <div
