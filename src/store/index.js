@@ -10,6 +10,7 @@ import {
 const store = createStore({
   state: {
     user: null, // считывание информации о пользователе из localStorage
+    chosenItems: [],
   },
   getters: {
     user: state => state.user,
@@ -28,6 +29,9 @@ const store = createStore({
       } else {
         localStorage.removeItem('user');
       }
+    },
+    updateChosenItems(state, payload) {
+      state.chosenItems = payload;
     },
   },
   actions: {

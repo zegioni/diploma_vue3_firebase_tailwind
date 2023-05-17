@@ -1,5 +1,8 @@
 <template>
-  <div v-if="!itemsIdMenu || itemsIdMenu.length === 0" class="m-[15px]">
+  <div
+    v-if="!itemsIdMenu || itemsIdMenu.length === 0"
+    class="m-[15px]"
+  >
     <div class="text-center">
       Empty 🥺
     </div>
@@ -9,10 +12,17 @@
       <div class="text-center m-[15px] menu-description">
         {{ descriptionMenu }}
       </div>
-      <div v-for="item in items" :key="item.id" class="card">
+      <div
+        v-for="(item, index) in items"
+        :key="index"
+        class="card"
+      >
         <div class="card-body">
           <div class="card-img">
-            <img src="https://placehold.jp/72x72.png" alt="">
+            <img
+              src="https://placehold.jp/72x72.png"
+              alt=""
+            >
           </div>
           <div class="card-information">
             <div class="card-title">
@@ -25,9 +35,13 @@
               <div class="card-price">
                 $ {{ item.price }}
               </div>
-              <div class="card-add">
+              <button
+                class="card-add"
+                :class="{ 'clicked': index === buttonClicked }"
+                @click="addToChosenItems(item,index)"
+              >
                 +
-              </div>
+              </button>
             </div>
           </div>
         </div>
@@ -38,6 +52,7 @@
 
 <script setup>
 import { watch, ref, onMounted } from 'vue';
+import store from '@/store/index';
 import {
   collection,
   query,
@@ -59,6 +74,23 @@ const props = defineProps({
       default: '',
     },
 });
+
+let buttonClicked = ref(null);
+
+const addToChosenItems = (item, index) => {
+  const existingItem = store.state.chosenItems.find(i => i.id === item.id);
+  if (existingItem) {
+    existingItem.quantity += 1;
+    existingItem.totalPrice = existingItem.price * existingItem.quantity;
+  } else {
+     store.state.chosenItems.push({ ...item, quantity: 1, price: item.price });
+  }
+
+  buttonClicked.value = index;
+      setTimeout(() => {
+        buttonClicked.value = null;
+      }, 500);
+};
 
 const itemsIdMenu = ref(props.itemsIdMenu);
 const items = ref([]);
@@ -101,9 +133,23 @@ const getItems = async id => {
     });
   });
 };
+
+onMounted(() => {
+  // Выполнить функцию getItems для получения элементов при монтировании компонента
+  itemsIdMenu.value &&
+    itemsIdMenu.value.forEach(item => {
+      items.value = [];
+      getItems(item.id);
+    });
+});
 </script>
 
 <style lang="scss" scoped>
+
+.clicked {
+    transition: 0.5s;
+    transform: scale(1.1);
+}
 .menu-description {
   color: black;
   font-size: 17px;
@@ -157,6 +203,7 @@ const getItems = async id => {
   background-color: #10b981;
   color: white;
   width: 35px;
+  height: 35px;
   border-radius: 50px;
   text-align: center;
 }

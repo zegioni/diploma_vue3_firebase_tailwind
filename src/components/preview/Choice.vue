@@ -1,75 +1,90 @@
 <template>
-  <div class="template">
-    <div class="header-choices">
-      <div class="header-item-choices flex items-center">
-        <button class="header-choices-back flex items-center justify-center rounded-full text-white w-10 h-10">
-          &lt;
-        </button>
-        <div class="header-choices-text flex-grow flex items-center justify-center">
-          Your Choices
+  <div
+    class="template"
+    style="overflow-y: scroll; white-space: nowrap; scrollbar-width: none; margin-bottom: 80px; padding-bottom: 65px;"
+  >
+    <div
+      class="scroll"
+    >
+      <div
+        v-for="item in store.state.chosenItems"
+        :key="item.id"
+        class="data-choices"
+      >
+        <div class="card-choices-text">
+          <div class="choices-text">
+            {{ item.title }}
+          </div>
         </div>
-      </div>
-    </div>
-    <div class="data-choices">
-      <div class="card-choices-text">
-        <div class="choices-text">
-          Text
-        </div>
-      </div>
-      <div class="card-choices-data">
-        <div class="card-choices-items">
-          <div class="card-choices-value">
-            <button class="choices-value-left flex items-center justify-center rounded-full text-white w-10 h-10">
-              -
-            </button>
-            <div class="choices-value-center">
-              30
+        <div class="card-choices-data">
+          <div class="card-choices-items">
+            <div class="card-choices-value">
+              <button
+                class="choices-value-left flex items-center justify-center rounded-full text-white size-circle"
+                @click="decreaseQuantity(item)"
+              >
+                -
+              </button>
+              <div class="choices-value-center">
+                {{ item.quantity || 1 }}
+              </div>
+              <button
+                class="choices-value-right flex items-center justify-center rounded-full text-white size-circle"
+                @click="increaseQuantity(item)"
+              >
+                +
+              </button>
             </div>
-            <button class="choices-value-right flex items-center justify-center rounded-full text-white w-10 h-10">
-              +
-            </button>
-          </div>
-          <div class="choices-price">
-            $0.50
+            <div class="choices-price">
+              $ {{ item.totalPrice ? item.totalPrice : item.price }}
+            </div>
           </div>
         </div>
       </div>
     </div>
-    <div class="order">
-      <div class="order-text">
-        Total
-      </div>
-      <div class="order-price">
-        <div class="order-price-symbol">
-          $
-        </div>
-        <div class="order-price-price">
-          5
-        </div>
-      </div>
-    </div>
+    <!-- <div style="white-space: normal;">
+      {{ store.state.chosenItems }}
+    </div> -->
   </div>
 </template>
 
 <script setup>
+import store from '@/store/index';
+
+const increaseQuantity = item => {
+  item.quantity++;
+  item.totalPrice = item.price * item.quantity;
+  store.commit('updateChosenItems', store.state.chosenItems);
+};
+
+const decreaseQuantity = item => {
+  if (item.quantity > 1) {
+    item.quantity--;
+    item.totalPrice = item.price * item.quantity;
+    store.commit('updateChosenItems', store.state.chosenItems);
+  } else {
+    removeItem(item);
+  }
+};
+
+const removeItem = item => {
+  const index = store.state.chosenItems.findIndex(i => i.id === item.id);
+  if (index !== -1) {
+    store.state.chosenItems.splice(index, 1);
+    store.commit('updateChosenItems', store.state.chosenItems);
+  }
+};
 
 </script>
 
 <style lang="scss" scoped>
-.header-item-choices {
-    margin-top: 5px;
-}
 
-.header-choices-back {
-    margin: 10px;
-    box-shadow: 0 2px 14px rgba(0, 0, 0, 0.1);
-    background-color: #10b981;
+.size-circle {
+  width: 35px;
+  height: 35px;
 }
-
-.header-choices-text {
-    font-size: 24px;
-    margin-right: 45px;
-    font-weight: 700;
+.template::-webkit-scrollbar {
+  display: none;
 }
 
 .data-choices {
@@ -118,45 +133,6 @@
 }
 .choices-price {
     background-color: transparent;
-}
-
-.order {
-  position: relative;
-  top: 420px;
-
-  display: flex;
-  flex-direction: row;
-  flex-wrap: nowrap;
-  justify-content: space-between;
-  align-items: center;
-  background-color: #10b981;
-  border-radius: 24px;
-  padding: 15px;
-  margin: 15px;
-}
-
-.order-text {
-    /* Add your styles here */
-    color: white;
-    font-size: 18px;
-    font-weight: 700;
-}
-
-.order-price {
-    display: flex;
-    flex-direction: row;
-
-    color: white;
-    font-size: 18px;
-}
-
-.order-price-symbol {
-  /* Add your styles here */
-  margin-right: 2px;
-}
-
-.order-price-price {
-    /* Add your styles here */
 }
 
 </style>
