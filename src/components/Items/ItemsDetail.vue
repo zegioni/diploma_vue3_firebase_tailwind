@@ -54,6 +54,12 @@
                 class="mt-1 px-3 py-2 bg-slate-50 placeholder-slate-400 focus:outline-none focus:border-sky-500 focus:ring-sky-500 block w-full rounded-md sm:text-sm focus:ring-1"
               >
             </div>
+            <div class="space-y-2 mb-2">
+              IMG
+            </div>
+            <div class="space-y-2 mb-2">
+              <uploadImg :itemId="item.id" @imageAdded="handleImageAdded" />
+            </div>
           </div>
         </div>
       </div>
@@ -84,6 +90,8 @@
 </template>
 
 <script setup>
+import uploadImg from '../uploadImg.vue';
+
 import {
   doc,
   getDoc,
@@ -103,6 +111,11 @@ const router = useRouter();
 const itemId = ref(route.params.id);
 const item = ref(null);
 const parent = ref([]);
+const images = ref([]);
+
+    const handleImageAdded = imageObjects => {
+      images.value = imageObjects; // сохраняем данные изображений в свойство item.images
+    };
 
 watch(parent, (newValue, oldValue) => {
   console.log(
@@ -121,6 +134,10 @@ const getItem = async () => {
       //console.log('No such document!')
     } else {
       item.value = itemDoc.data();
+      if (itemDoc.data().images) {
+        // Проверяем, есть ли изображения для элемента
+        item.images = itemDoc.data().images;
+      }
     }
   } catch (err) {
     console.log(err);
@@ -196,6 +213,7 @@ const saveChange = async item => {
         title: item.title,
         description: item.description,
         price: item.price,
+        images: images.value,
         updatedAt: new Date(),
         parentId: parentIds.map(id => ({ id })),
       });
