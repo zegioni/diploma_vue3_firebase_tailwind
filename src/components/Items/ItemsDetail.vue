@@ -90,7 +90,7 @@
 </template>
 
 <script setup>
-import uploadImg from '../uploadImg.vue';
+import uploadImg from './uploadImg.vue';
 
 import {
   doc,
