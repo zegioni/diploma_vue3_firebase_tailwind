@@ -20,7 +20,7 @@
         <div class="card-body">
           <div class="card-img">
             <img
-              src="https://placehold.jp/72x72.png"
+              :src="item.images[0].url"
               alt=""
             >
           </div>
@@ -123,7 +123,8 @@ const getItems = async id => {
         id: doc.id,
         title: data.title,
         description: data.description,
-        price: data.price
+        price: data.price,
+        images: data.images
       });
     });
     itemsList.forEach(item => {
@@ -165,13 +166,16 @@ onMounted(() => {
   border-radius: 24px;
 }
 .card-img {
-  width: 72px;
+  width: 105px;
   margin-top: 15px;
   margin-left: 15px;
   margin-bottom: 15px;
 }
 .card-img img {
+    width: 80px;
+    height: 80px;
   border-radius: 15px;
+  object-fit: cover;
 }
 
 .card-information {

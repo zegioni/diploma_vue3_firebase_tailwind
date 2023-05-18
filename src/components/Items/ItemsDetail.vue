@@ -215,29 +215,6 @@ const saveChange = async item => {
         price: item.price,
         images: images.value,
         updatedAt: new Date(),
-        parentId: parentIds.map(id => ({ id })),
-      });
-      const menusRef = collection(db, 'menus');
-      const menusQuerySnapshot = await getDocs(menusRef);
-      menusQuerySnapshot.forEach(async doc => {
-        const childId = doc.data().childId;
-        const indexToUpdate = childId.findIndex(
-          child => child.id === item.id
-        );
-        if (indexToUpdate !== -1) {
-          const newChildId = [
-            ...childId.slice(0, indexToUpdate),
-            ...childId.slice(indexToUpdate + 1),
-          ];
-          await updateDoc(doc.ref, { childId: newChildId });
-        }
-      });
-
-      const validChildIds = parentIds.filter(id => id !== undefined);
-      validChildIds.forEach(id => {
-        batch.update(doc(db, 'menus', id), {
-          childId: arrayUnion({ id: item.id, title: item.title }),
-        });
       });
 
       await batch.commit();
