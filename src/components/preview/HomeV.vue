@@ -10,23 +10,17 @@
     align-items: flex-start;
     justify-content: flex-start;"
       >
-        <div
-          class="slider"
-          style="cursor: pointer;"
-        >
-          <div
-            class="background-img"
-            :style="{ transform: `translateX(-${activeIndex.value * 100}%)` }"
-          >
-            <div
-              v-for="(img, index) in restPhoto"
-              :key="index"
-              :class="{ active: index === activeIndex, next: index === nextIndex, prev: index === prevIndex }"
-              class="images"
-              :style="{ backgroundImage: `url(${img.url})` }"
-            />
-          </div>
-        </div>
+  <div class="slider" style="cursor: pointer;">
+    <div class="background-img">
+      <div
+        v-for="(img, index) in restPhoto"
+        :key="index"
+        :class="{ active: index === activeIndex }"
+        class="images"
+        :style="{ backgroundImage: `url(${img.url})` }"
+      ></div>
+    </div>
+  </div>
         <div class="bg-white absolutePos text-black rounded-t-[50px] h-[52%]">
           <div class="flex flex-col items-center mb-[15px]">
             <div
@@ -104,7 +98,7 @@
 
 <script setup>
 import MenuV from './MenuV.vue';
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, computed, onBeforeUnmount } from 'vue';
 import { getDoc, doc } from 'firebase/firestore';
 
 import { db } from '@/firebase/config';
@@ -139,36 +133,24 @@ const getRestaurantData = async () => {
   }
 };
 
-  const activeIndex = ref(0);
-    const prevIndex = ref(restPhoto.value.length - 1);
-    const nextIndex = ref(1);
+    const activeIndex = ref(0);
 
     const nextSlide = () => {
-      activeIndex.value = (activeIndex.value + 1) % restPhoto.value.length;
-      prevIndex.value = (prevIndex.value + 1) % restPhoto.value.length;
-      nextIndex.value = (nextIndex.value + 1) % restPhoto.value.length;
+      if (restPhoto.value.length > 0) {
+        activeIndex.value = (activeIndex.value + 1) % restPhoto.value.length;
+      }
     };
 
-    const previousSlide = () => {
-      activeIndex.value =
-        (activeIndex.value - 1 + restPhoto.value.length) % restPhoto.value.length;
-      prevIndex.value =
-        (prevIndex.value - 1 + restPhoto.value.length) % restPhoto.value.length;
-      nextIndex.value =
-        (nextIndex.value - 1 + restPhoto.value.length) % restPhoto.value.length;
-    };
-
-    const currentImage = computed(() => restPhoto.value[activeIndex.value]);
-
-    const startSlideShow = () => {
-      setInterval(nextSlide, 3000); // Переключение слайда каждые 3 секунды (настраиваемое)
-    };
+    onMounted(() => {
+      const intervalId = setInterval(nextSlide, 3000);
+      // Очищаем интервал перед уничтожением компонента
+      onBeforeUnmount(() => {
+        clearInterval(intervalId);
+      });
+    });
 
 onMounted(() => {
   getRestaurantData();
-        if (restPhoto.value.length > 0) {
-        startSlideShow(); // Запуск слайдера только если есть изображения
-      }
 });
 </script>
 

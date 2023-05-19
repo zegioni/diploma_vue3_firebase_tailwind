@@ -1,6 +1,6 @@
 <!-- eslint-disable prettier/prettier -->
 <template>
-  <nav class="flex my-8 h-[48rem]">
+  <nav class="flex my-8 h-[53rem]">
     <div class="bg-slate-100 shadow-lg rounded-md">
       <div class="text-center p-4">
         Admin

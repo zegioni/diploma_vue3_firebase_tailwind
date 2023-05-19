@@ -24,7 +24,7 @@
       class="image-uploader__upload"
       :class="{ disabled: imageObjects.length >= maxImages }"
       :for="imageObjects.length < maxImages ? 'file-input-' + imageType : ''"
-      style="cursor: pointer;"
+      style="cursor: pointer"
     >
       <div
         class="image-uploader__upload-button"
@@ -36,7 +36,7 @@
         :id="'file-input-' + imageType"
         type="file"
         accept="image/*"
-        style="display: none;"
+        style="display: none"
         :disabled="imageObjects.length >= maxImages"
         @change="uploadImage"
       >
@@ -46,9 +46,15 @@
 
 <script>
 import { ref, defineEmits } from 'vue';
-import { getStorage, ref as storageRef, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
+import {
+  getStorage,
+  ref as storageRef,
+  uploadBytes,
+  getDownloadURL,
+  deleteObject,
+} from 'firebase/storage';
 import { firebaseApp } from '@/firebase/config';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc, arrayRemove, writeBatch } from 'firebase/firestore';
 import { db } from '@/firebase/config';
 
 defineEmits(['image-added']);
@@ -66,8 +72,8 @@ export default {
     },
     maxImg: {
       type: Number,
-      required: true
-    }
+      required: true,
+    },
   },
   data() {
     return {
@@ -84,17 +90,23 @@ export default {
     this.fetchImages();
   },
   methods: {
-    async fetchImages() {
-      const storage = getStorage(firebaseApp);
-      const itemDocRef = doc(db, 'restaurants', this.createdAd);
-      const itemDocSnap = await getDoc(itemDocRef);
-      if (itemDocSnap.exists()) {
-        const images = this.imageType === 'logo' ? itemDocSnap.data().restLogo : itemDocSnap.data().restPhoto;
-        if (images) {
-          this.imageObjects = images;
-        }
-      }
-    },
+async fetchImages() {
+  const storage = getStorage(firebaseApp);
+  const itemDocRef = doc(db, 'restaurants', this.createdAd);
+  const itemDocSnap = await getDoc(itemDocRef);
+  
+  if (itemDocSnap.exists()) {
+    const images =
+      this.imageType === 'logo'
+        ? itemDocSnap.data().restLogo
+        : itemDocSnap.data().restPhoto;
+    
+    if (images) {
+      console.log('images :>> ', images);    
+      this.imageObjects = images;
+    }
+  }
+},
     async uploadImage(event) {
       const file = event.target.files[0];
       const storage = getStorage(firebaseApp);
@@ -119,11 +131,10 @@ export default {
         await deleteObject(storageReference);
 
         this.imageObjects.splice(index, 1);
-
       } catch (error) {
         console.error('Error deleting image: ', error);
       }
-    }
+    },
   },
 };
 </script>
@@ -135,15 +146,15 @@ export default {
 }
 
 .image-uploader__delete-button {
-position: relative;
-    top: -111px;
-    right: -38px;
-    background-color: #10b981;
-    border: 2px solid white;
-    border-radius: 24px;
-    width: 35px;
-    height: 35px;
-    color: white;
+  position: relative;
+  top: -111px;
+  right: -38px;
+  background-color: #10b981;
+  border: 2px solid white;
+  border-radius: 24px;
+  width: 35px;
+  height: 35px;
+  color: white;
 }
 
 .image-uploader__upload {
@@ -162,7 +173,7 @@ position: relative;
   cursor: not-allowed;
 }
 .image-uploader__upload-button.disabled {
-color: #ddd;
+  color: #ddd;
 }
 
 .image-uploader__upload-button {
@@ -178,9 +189,9 @@ color: #ddd;
 }
 
 .image-uploader__image {
-display: flex;
-    align-items: center;
-    flex-direction: column;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
 }
 
 .image-uploader__preview {

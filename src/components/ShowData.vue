@@ -1,6 +1,6 @@
 <template>
   <div class="flex">
-    <nav class="h-[48rem] flex ml-4">
+    <nav class="h-[53rem] flex ml-4">
       <div class="bg-slate-100 shadow-lg w-72 rounded-md">
         <div class="py-4 px-5">
           <div class="flex justify-evenly">
