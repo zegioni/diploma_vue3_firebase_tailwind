@@ -156,6 +156,7 @@ onMounted(() => {
   font-size: 17px;
   font-weight: 500;
   text-align: left;
+  white-space: normal;
 }
 .card-body {
   background-color: white;
@@ -191,6 +192,7 @@ onMounted(() => {
 .card-description {
   font-size: 13px;
   font-weight: 400;
+  white-space: normal;
 }
 .card-group {
   display: flex;

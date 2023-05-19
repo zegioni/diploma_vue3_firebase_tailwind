@@ -6,14 +6,38 @@
       <div
         v-if="!showMenuV"
         class="shadow-lg rounded-md h-[48rem] flex flex-col justify-center relative"
+        style="display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;"
       >
-        <div class="flex-grow images" />
+        <div
+          class="slider"
+          style="cursor: pointer;"
+        >
+          <div
+            class="background-img"
+            :style="{ transform: `translateX(-${activeIndex.value * 100}%)` }"
+          >
+            <div
+              v-for="(img, index) in restPhoto"
+              :key="index"
+              :class="{ active: index === activeIndex, next: index === nextIndex, prev: index === prevIndex }"
+              class="images"
+              :style="{ backgroundImage: `url(${img.url})` }"
+            />
+          </div>
+        </div>
         <div class="bg-white absolutePos text-black rounded-t-[50px] h-[52%]">
           <div class="flex flex-col items-center mb-[15px]">
-            <div class="rest-logo">
+            <div
+              v-for="(img, index) in restLogo"
+              :key="index"
+              class="rest-logo"
+              style="margin-top: 15px;"
+            >
               <img
                 class="w-[120px]"
-                src="@/assets/logo.png"
+                :src="img.url"
                 alt=""
               >
             </div>
@@ -80,7 +104,7 @@
 
 <script setup>
 import MenuV from './MenuV.vue';
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { getDoc, doc } from 'firebase/firestore';
 
 import { db } from '@/firebase/config';
@@ -89,12 +113,14 @@ const title = ref('');
 const description = ref('');
 const emailAddress = ref('');
 const phoneNumber = ref('');
+const restLogo = ref([]);
+const restPhoto = ref([]);
 
 const user = JSON.parse(localStorage.getItem('user'));
 const userId = user ? user.uid : null;
 const docRef = doc(db, 'restaurants', userId);
 
-const showMenuV = ref(true);
+const showMenuV = ref(false);
 
 const getRestaurantData = async () => {
   const docSnap = await getDoc(docRef);
@@ -105,14 +131,44 @@ const getRestaurantData = async () => {
     description.value = data.description;
     emailAddress.value = data.emailAddress;
     phoneNumber.value = data.phoneNumber;
+    restLogo.value = data.restLogo;
+    restPhoto.value = data.restPhoto;
   } else {
     // Если документ не существует, создайте его и установите начальные значения ввода
     console.log('NO DATA: ');
   }
 };
 
+  const activeIndex = ref(0);
+    const prevIndex = ref(restPhoto.value.length - 1);
+    const nextIndex = ref(1);
+
+    const nextSlide = () => {
+      activeIndex.value = (activeIndex.value + 1) % restPhoto.value.length;
+      prevIndex.value = (prevIndex.value + 1) % restPhoto.value.length;
+      nextIndex.value = (nextIndex.value + 1) % restPhoto.value.length;
+    };
+
+    const previousSlide = () => {
+      activeIndex.value =
+        (activeIndex.value - 1 + restPhoto.value.length) % restPhoto.value.length;
+      prevIndex.value =
+        (prevIndex.value - 1 + restPhoto.value.length) % restPhoto.value.length;
+      nextIndex.value =
+        (nextIndex.value - 1 + restPhoto.value.length) % restPhoto.value.length;
+    };
+
+    const currentImage = computed(() => restPhoto.value[activeIndex.value]);
+
+    const startSlideShow = () => {
+      setInterval(nextSlide, 3000); // Переключение слайда каждые 3 секунды (настраиваемое)
+    };
+
 onMounted(() => {
   getRestaurantData();
+        if (restPhoto.value.length > 0) {
+        startSlideShow(); // Запуск слайдера только если есть изображения
+      }
 });
 </script>
 
@@ -121,12 +177,81 @@ onMounted(() => {
 .homeDescription::-webkit-scrollbar {
   display: none; /* для скрытия полосы прокрутки в Chrome, Safari и Opera */
 }
+
+.slider {
+  width: 100%;
+  overflow: hidden;
+}
+
+.background-img {
+  display: flex;
+  transition: transform 1s ease;
+}
+
+.active {
+  display: block !important;
+  animation: slide-in 1s;
+}
+
+.next {
+  animation: slide-next 1s;
+}
+
+.prev {
+  animation: slide-prev 1s;
+}
+
 .images {
-  background-image: url(@/assets/img/bg-rest.jpg);
+  display: none;
+  flex-shrink: 0;
+  width: 100%;
+  height: 100%;
   background-position: center;
   background-repeat: no-repeat;
-  background-position-y: -100px;
-  background-size: contain;
+  background-size: cover;
+  opacity: 0;
+  animation-fill-mode: forwards;
+}
+
+@keyframes slide-in {
+  0% {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slide-next {
+  0% {
+    opacity: 0;
+    transform: translateX(-100%);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slide-prev {
+  0% {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.background-img {
+  display: flex;
+  width: 374px;
+  height: 433px;
+  /* Дополнительные стили для скрытия полосы прокрутки в Chrome, Safari и Opera */
+  overflow: hidden;
 }
 
 .absolutePos {
@@ -160,5 +285,12 @@ onMounted(() => {
     font-size: 15px;
     color: white;
   }
+}
+
+.rest-logo img { 
+    width: 80px;
+    height: 80px;
+    border: 2px solid #10b981;
+    border-radius: 114px;
 }
 </style>
