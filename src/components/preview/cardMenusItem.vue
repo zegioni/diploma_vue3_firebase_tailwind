@@ -18,13 +18,16 @@
         class="card"
       >
         <div class="card-body">
-          <div class="card-img">
+          <div
+            v-if="item.images.length && item.images[0].url"
+            class="card-img"
+          >
             <img
               :src="item.images[0].url"
               alt=""
             >
           </div>
-          <div class="card-information">
+          <div :class="['card-information', { 'no-img': !item.images.length || !item.images[0].url }]">
             <div class="card-title">
               {{ item.title }}
             </div>
@@ -147,6 +150,13 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 
+.no-img {
+  width: 100% !important;
+  margin-top: 15px !important;
+  margin-left: 15px !important;
+  margin-bottom: 15px !important;
+}
+
 .clicked {
     transition: 0.5s;
     transform: scale(1.1);
@@ -188,11 +198,14 @@ onMounted(() => {
 .card-title {
   font-size: 17px;
   font-weight: 700;
+  width: 90%;
+  white-space: normal;
 }
 .card-description {
   font-size: 13px;
   font-weight: 400;
   white-space: normal;
+  width: 75%;
 }
 .card-group {
   display: flex;

@@ -39,7 +39,7 @@
         </div>
       </template>
       <template v-else>
-        <div class="px-4 py-3 bg-slate-900">
+        <div class="px-4 py-3 bg-slate-50">
           No such items
         </div>
       </template>

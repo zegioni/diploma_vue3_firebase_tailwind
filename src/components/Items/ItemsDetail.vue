@@ -42,12 +42,14 @@
               Add Description for your item
             </div>
             <div class="space-y-2 mb-2">
-              <input
+              <textarea
                 id="title"
                 v-model="item.description"
-                type="text"
-                class="mt-1 px-3 py-2 bg-slate-50 placeholder-slate-400 focus:outline-none focus:border-sky-500 focus:ring-sky-500 block w-full rounded-md sm:text-sm focus:ring-1"
-              >
+                rows="4"
+                cols="50"
+                class="mt-1 px-3 py-2 bg-slate-50 placeholder-slate-50 focus:outline-none focus:border-sky-500 focus:ring-sky-500 block w-full rounded-md sm:text-sm focus:ring-1"
+                style="resize: none;"
+              />
             </div>
           </div>
         </div>
@@ -68,7 +70,7 @@
               <input
                 id="title"
                 v-model="item.price"
-                type="text"
+                type="number"
                 class="mt-1 px-3 py-2 bg-slate-50 placeholder-slate-400 focus:outline-none focus:border-sky-500 focus:ring-sky-500 block w-full rounded-md sm:text-sm focus:ring-1"
               >
             </div>
@@ -145,10 +147,9 @@ const item = ref(null);
 const parent = ref([]);
 const images = ref([]);
 
-    const handleImageAdded = imageObjects => {
-      images.value = imageObjects; 
-      item.images = push(images.value); // сохраняем данные изображений в свойство item.images
-    };
+const handleImageAdded = imageObjects => {
+  images.value = imageObjects; 
+};
 
 watch(parent, (newValue, oldValue) => {
   console.log(
