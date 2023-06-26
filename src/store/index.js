@@ -11,11 +11,16 @@ const store = createStore({
   state: {
     user: null, // считывание информации о пользователе из localStorage
     chosenItems: [],
+    notification: [],
   },
   getters: {
     user: state => state.user,
+    notification: state => state.notification,
   },
   mutations: {
+    setNotification(state, payload) {
+      state.notification = payload;
+    },
     init(state) {
       const userJSON = localStorage.getItem('user');
       if (userJSON) {
@@ -69,6 +74,8 @@ const store = createStore({
   },
   modules: {},
 });
+
+
 
 store.commit('init');
 

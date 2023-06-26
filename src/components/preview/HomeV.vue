@@ -1,27 +1,30 @@
 <template>
   <div>
     <div
-      class="m-auto w-[390px] pl-4"
+      class="maxW m-auto"
     >
       <div
         v-if="!showMenuV"
-        class="shadow-lg rounded-md h-[48rem] flex flex-col justify-center relative"
+        class="rounded-md hMax flex flex-col justify-center"
         style="display: flex;
     align-items: flex-start;
     justify-content: flex-start;"
       >
-  <div class="slider" style="cursor: pointer;">
-    <div class="background-img">
-      <div
-        v-for="(img, index) in restPhoto"
-        :key="index"
-        :class="{ active: index === activeIndex }"
-        class="images"
-        :style="{ backgroundImage: `url(${img.url})` }"
-      ></div>
-    </div>
-  </div>
-        <div class="bg-white absolutePos text-black rounded-t-[50px] h-[52%]">
+        <div
+          class="slider"
+          style="cursor: pointer;"
+        >
+          <div class="background-img">
+            <div
+              v-for="(img, index) in restPhoto"
+              :key="index"
+              :class="{ active: index === activeIndex }"
+              class="images"
+              :style="{ backgroundImage: `url(${img.url})` }"
+            />
+          </div>
+        </div>
+        <div class="bg-white absolutePos text-black rounded-t-[50px] h-[52%] maxW">
           <div class="flex flex-col items-center mb-[15px]">
             <div
               v-for="(img, index) in restLogo"
@@ -114,7 +117,7 @@ const user = JSON.parse(localStorage.getItem('user'));
 const userId = user ? user.uid : null;
 const docRef = doc(db, 'restaurants', userId);
 
-const showMenuV = ref(false);
+const showMenuV = ref(true);
 
 const getRestaurantData = async () => {
   const docSnap = await getDoc(docRef);
@@ -155,6 +158,14 @@ onMounted(() => {
 </script>
 
 <style lang="scss" scoped>
+
+.hMax {
+  max-height: 1200px;
+}
+
+.maxW {
+  max-width: 500px;
+}
 
 .homeDescription::-webkit-scrollbar {
   display: none; /* для скрытия полосы прокрутки в Chrome, Safari и Opera */
@@ -230,9 +241,7 @@ onMounted(() => {
 
 .background-img {
   display: flex;
-  width: 374px;
-  height: 433px;
-  /* Дополнительные стили для скрытия полосы прокрутки в Chrome, Safari и Opera */
+  height: 500px;
   overflow: hidden;
 }
 

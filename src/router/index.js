@@ -13,12 +13,14 @@ const routes = [
     component: () => import('../views/Home.vue'),
   },
   {
+    path: '/restaurant/:id',
+    name: 'restaurant',
+    component: () => import('../components/preview/HomeV.vue'),
+  },
+  {
     path: '/menus-management',
     name: 'menus-management',
     component: () => import('../views/Loyouts.vue'),
-    meta: {
-      requiresAuth: true,
-    },
     children: [
       {
         path: 'menus/:id',
@@ -32,9 +34,6 @@ const routes = [
         path: 'items/:id',
         name: 'items-detail',
         component: () => import('../components/Items/ItemsDetail.vue'),
-        meta: {
-          requiresAuth: true,
-        },
       },
     ],
   },
@@ -42,17 +41,11 @@ const routes = [
     path: '/restaurant-settings',
     name: 'restaurant-settings',
     component: () => import('../views/Loyouts.vue'),
-    meta: {
-      requiresAuth: true,
-    },
   },
   {
     path: '/menu-preview',
     name: 'menu-preview',
     component: () => import('../views/Loyouts.vue'),
-    meta: {
-      requiresAuth: true,
-    },
   },
   {
     path: '/signup',

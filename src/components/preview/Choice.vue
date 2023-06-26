@@ -1,15 +1,14 @@
 <template>
   <div
     class="template"
-    style="overflow-y: scroll; white-space: nowrap; scrollbar-width: none; margin-bottom: 80px; padding-bottom: 65px;"
+    style="white-space: nowrap;"
   >
-    <div
-      class="scroll"
-    >
+    <div style="margin-bottom: 100px;">
       <div
         v-for="item in store.state.chosenItems"
         :key="item.id"
         class="data-choices"
+        style="overflow-x: scroll; white-space: nowrap; scrollbar-width: none;"
       >
         <div class="card-choices-text">
           <div class="choices-text">
@@ -41,15 +40,36 @@
           </div>
         </div>
       </div>
+      <div
+        v-if="totalOrderPrice > 0"
+        class="order"
+      >
+        <div class="order-text">
+          Total
+        </div>
+        <div class="order-price">
+          <div class="order-price-symbol">
+            $
+          </div>
+          <div class="order-price-price">
+            {{ totalOrderPrice }}
+          </div>
+        </div>
+      </div>
     </div>
-    <!-- <div style="white-space: normal;">
-      {{ store.state.chosenItems }}
-    </div> -->
   </div>
 </template>
 
 <script setup>
-import store from '@/store/index';
+import { computed } from 'vue';
+
+import { useStore } from 'vuex';
+
+const store = useStore();
+
+const sendNotification = () => {
+  store.commit('setNotification', store.state.chosenItems);
+};
 
 const increaseQuantity = item => {
   item.quantity++;
@@ -75,16 +95,30 @@ const removeItem = item => {
   }
 };
 
+const totalOrderPrice = computed(() => {
+  const chosenItems = store.state.chosenItems;
+  let totalPrice = 0;
+  
+  chosenItems.forEach(item => {
+    const itemPrice = item.price !== null ? parseFloat(item.price) : 0;
+    const itemTotalPrice = item.totalPrice !== null ? parseFloat(item.totalPrice) : 0;
+    totalPrice += itemTotalPrice ? itemTotalPrice : itemPrice;
+  });
+
+  return totalPrice;
+});
+
 </script>
 
 <style lang="scss" scoped>
 
+.template {
+  height: 695px;
+}
+
 .size-circle {
   width: 35px;
   height: 35px;
-}
-.template::-webkit-scrollbar {
-  display: none;
 }
 
 .data-choices {
@@ -133,6 +167,42 @@ const removeItem = item => {
 }
 .choices-price {
     background-color: transparent;
+}
+
+.order {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #10b981;
+    border-radius: 24px;
+    padding: 15px;
+    margin: 15px;
+}
+
+.order-text {
+    /* Add your styles here */
+    color: white;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.order-price {
+    display: flex;
+    flex-direction: row;
+
+    color: white;
+    font-size: 18px;
+}
+
+.order-price-symbol {
+  /* Add your styles here */
+  margin-right: 2px;
+}
+
+.order-price-price {
+    /* Add your styles here */
 }
 
 </style>

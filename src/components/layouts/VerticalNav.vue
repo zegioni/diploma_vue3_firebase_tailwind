@@ -46,7 +46,31 @@
       v-if="$route.path.includes('/menu-preview')"
       class="grow"
     >
-      <MenuPreview />
+      <nav class="h-[53rem] flex ml-4">
+        <div class="bg-slate-100 shadow-lg w-72 rounded-md">
+          <div class="py-4 px-5">
+            <div class="flex justify-evenly">
+              Preview Menu
+            </div>
+            <div class="text-center">
+              <button
+                class="space-y-2 mt-4 border-2 rounded-lg border-emerald-500 p-2 w-[15rem]"
+              >
+                <router-link
+                  :to="`/restaurant/${userId}`"
+                  class="text-truncate p-2"
+                  target="_blank"
+                >
+                  Link To App
+                </router-link>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="ml-4 w-[370px] shadow-lg">
+          <MenuPreview />
+        </div>
+      </nav>
     </div>
   </nav>
 </template>
@@ -61,6 +85,16 @@ export default {
     ShowData,
     RestaurantSettings,
     MenuPreview
+  },
+  setup() {
+    // Ваш код и логика компонента
+    const user = JSON.parse(localStorage.getItem('user'));
+    const userId = user ? user.uid : null;
+    console.log('userId :>> ', userId);
+
+    return {
+      userId, // возвращаем хранилище в качестве результата функции setup
+    };
   },
 };
 </script>
