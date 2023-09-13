@@ -36,7 +36,7 @@ import { db, auth } from '@/firebase/config';
 import router from '@/router';
 import { useRoute } from 'vue-router';
 import { reactive, onMounted } from 'vue';
-import { ref, watch } from 'vue';
+import { ref, watch } from 'vue'
 import { toast } from 'vue3-toastify';
 
 const user = JSON.parse(localStorage.getItem('user'));
@@ -52,7 +52,7 @@ const showMenu = () => {
     const sortedMenus = [...menus.value].sort((a, b) => {
       const dateA = a.updatedAt ? a.updatedAt.toDate() : a.createdAt.toDate();
       const dateB = b.updatedAt ? b.updatedAt.toDate() : b.createdAt.toDate();
-      return dateB - dateA;
+      return dateB - date;
     });
     return sortedMenus;
   }

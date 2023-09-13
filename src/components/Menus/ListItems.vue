@@ -68,7 +68,7 @@ const userId = user ? user.uid : null;
 
 const getItemList = async () => {
   const querySnapshot = await getDocs(collection(db, 'items'));
-  const list = [];
+  const list = []
   querySnapshot.forEach(doc => {
     const createdBy = doc.data().createdBy;
     if (createdBy === userId) {
