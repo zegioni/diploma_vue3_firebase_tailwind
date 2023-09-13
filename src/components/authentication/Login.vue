@@ -1,3 +1,4 @@
+<!-- eslint-disable prettier/prettier -->
 <template>
   <div class="flex items-center justify-center h-screen">
     <form
@@ -41,15 +42,15 @@
           class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
           type="submit"
         >
-          Зарегистрироваться
+          Войти
         </button>
         <span class="text-gray-700 text-sm">
-          Есть аккаунта?
+          Нет аккаунта?
           <router-link
-            to="/login"
+            to="/signup"
             class="font-semibold text-blue-500"
           >
-            Войти
+            Зарегистрироваться
           </router-link>
         </span>
         <div v-if="error">
@@ -61,43 +62,49 @@
 </template>
 
 <script>
-import { ref } from 'vue'
-import { useStore } from 'vuex'
-import { useRouter } from 'vue-router'
-import { toast } from 'vue3-toastify'
+import { ref, onMounted } from 'vue';
+import { useStore } from 'vuex';
+import { useRouter } from 'vue-router';
 
 export default {
   setup() {
-    const email = ref('')
-    const password = ref('')
-    const error = ref(null)
+    const email = ref('');
+    const password = ref('');
+    const error = ref(null);
 
-    const store = useStore()
-    const router = useRouter()
+    const store = useStore();
+    const router = useRouter();
 
     const handleSubmit = async () => {
       try {
-        await store.dispatch('signup', {
+        await store.dispatch('login', {
           email: email.value,
           password: password.value,
-        })
-        router.push('/login')
-        toast('Pls Verified email!', {
-          autoClose: 1000,
-        })
+        });
+        router.push('/menus-management');
       } catch (err) {
-        error.value = err.message
+        error.value = err.message;
       }
-    }
+    };
+    const checkUser = store => {
+      const user = localStorage.getItem('user');
+      // console.log("userLogin", user);
+      if (user) {
+        store.commit('setUser', JSON.parse(user));
+        router.push('/menus-management');
+      }
+    };
 
-    return { handleSubmit, email, password, error }
+    onMounted(() => checkUser(store));
+
+    return { handleSubmit, email, password, error };
   },
-}
+};
 </script>
 
 <style lang="sass" scoped>
 form 
-  position: absolute
+  position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);

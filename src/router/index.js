@@ -1,5 +1,5 @@
-import { createRouter, createWebHistory } from 'vue-router'
-import store from '@/store'
+import { createRouter, createWebHistory } from 'vue-router';
+import store from '@/store';
 
 const routes = [
   {
@@ -8,54 +8,71 @@ const routes = [
     redirect: { name: 'Login' },
   },
   {
-    path: '/post-view',
-    name: 'post-view',
+    path: '/menus-view',
+    name: 'menus-view',
     component: () => import('../views/Home.vue'),
   },
   {
+    path: '/restaurant/:id',
+    name: 'restaurant',
+    component: () => import('../components/preview/HomeV.vue'),
+  },
+  {
     path: '/menus-management',
-    name: 'menus',
+    name: 'menus-management',
     component: () => import('../views/Loyouts.vue'),
-    meta: {
-      requiresAuth: true,
-    },
     children: [
       {
         path: 'menus/:id',
         name: 'menus-detail',
-        component: () => import('../components/Posts/PostDetail.vue'),
+        component: () => import('../components/Menus/MenusDetail.vue'),
         meta: {
           requiresAuth: true,
         },
       },
+      {
+        path: 'items/:id',
+        name: 'items-detail',
+        component: () => import('../components/Items/ItemsDetail.vue'),
+      },
     ],
+  },
+  {
+    path: '/restaurant-settings',
+    name: 'restaurant-settings',
+    component: () => import('../views/Loyouts.vue'),
+  },
+  {
+    path: '/menu-preview',
+    name: 'menu-preview',
+    component: () => import('../views/Loyouts.vue'),
   },
   {
     path: '/signup',
     name: 'Signup',
-    component: () => import('../views/Signup.vue'),
+    component: () => import('../components/authentication/Signup.vue'),
   },
   {
     path: '/login',
     name: 'Login',
-    component: () => import('../views/Login.vue'),
+    component: () => import('../components/authentication/Login.vue'),
   },
-]
+];
 
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes,
-})
+});
 
 router.beforeEach(async (to, from, next) => {
-  const requiresAuth = to.matched.some(record => record.meta.requiresAuth)
-  const user = store.getters.user
+  const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
+  const user = store.getters.user;
 
   if (requiresAuth && !user) {
-    next('/login')
+    next('/login');
   } else {
-    next()
+    next();
   }
-})
+});
 
-export default router
+export default router;

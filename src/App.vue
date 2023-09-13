@@ -1,27 +1,30 @@
 <template>
-  <div class="w-11/12 mx-auto mt-4 bg">
+  <div>
     <router-view />
   </div>
 </template>
 
 <script>
-export default {}
+export default {};
 </script>
 
 <style lang="sass">
 body
-  background-color: #f8f8f8;
+  background-color: #e2e8f0
+  color: #0f172a
 
 .router-link-active
-  background-color: rgb(68, 0, 255);
-  color: #f8f8f8;
+  color: #f0fdfa
+  background-color: #10b981
 
 .router-link-exact-active
-  background-color: rgb(68, 0, 255);
-  color: #f8f8f8;
+  color: #f0fdfa
+  background-color: #10b981
+
+
 
 .text-truncate
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  white-space: nowrap
+  overflow: hidden
+  text-overflow: ellipsis
 </style>

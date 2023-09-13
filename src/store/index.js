@@ -1,33 +1,42 @@
-import { createStore } from 'vuex'
-import { auth } from '../firebase/config'
+import { createStore } from 'vuex';
+import { auth } from '../firebase/config';
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signOut,
   onAuthStateChanged,
-} from 'firebase/auth'
+} from 'firebase/auth';
 
 const store = createStore({
   state: {
     user: null, // считывание информации о пользователе из localStorage
+    chosenItems: [],
+    notification: [],
   },
   getters: {
     user: state => state.user,
+    notification: state => state.notification,
   },
   mutations: {
+    setNotification(state, payload) {
+      state.notification = payload;
+    },
     init(state) {
-      const userJSON = localStorage.getItem('user')
+      const userJSON = localStorage.getItem('user');
       if (userJSON) {
-        state.user = JSON.parse(userJSON)
+        state.user = JSON.parse(userJSON);
       }
     },
     setUser(state, payload) {
-      state.user = payload
+      state.user = payload;
       if (payload) {
-        localStorage.setItem('user', JSON.stringify(payload))
+        localStorage.setItem('user', JSON.stringify(payload));
       } else {
-        localStorage.removeItem('user')
+        localStorage.removeItem('user');
       }
+    },
+    updateChosenItems(state, payload) {
+      state.chosenItems = payload;
     },
   },
   actions: {
@@ -36,44 +45,46 @@ const store = createStore({
         auth,
         email,
         password
-      )
+      );
       if (response) {
-        context.commit('setUser', response.user)
+        context.commit('setUser', response.user);
       } else {
-        throw new Error('signup failed')
+        throw new Error('signup failed');
       }
     },
     async login(context, { email, password }) {
-      const response = await signInWithEmailAndPassword(auth, email, password)
+      const response = await signInWithEmailAndPassword(auth, email, password);
       if (response) {
-        context.commit('setUser', response.user)
+        context.commit('setUser', response.user);
       } else {
-        throw new Error('login failed')
+        throw new Error('login failed');
       }
     },
     async logout(context, redirect) {
       try {
-        await signOut(auth)
-        context.commit('setUser', null)
+        await signOut(auth);
+        context.commit('setUser', null);
         if (redirect && redirect.router) {
-          redirect.router.push('/login')
+          redirect.router.push('/login');
         }
       } catch (error) {
-        throw new Error('login failed')
+        throw new Error('login failed');
       }
     },
   },
   modules: {},
-})
+});
 
-store.commit('init')
+
+
+store.commit('init');
 
 onAuthStateChanged(auth, user => {
   if (user) {
-    store.commit('setUser', user)
+    store.commit('setUser', user);
   } else {
-    store.commit('setUser', null)
+    store.commit('setUser', null);
   }
-})
+});
 
-export default store
+export default store;

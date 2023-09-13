@@ -1,0 +1,149 @@
+<template>
+  <div>
+    <div class="text-center">
+      <button
+        class="space-y-2 mb-4 border-2 rounded-lg border-emerald-500 p-2 w-[15rem]"
+        @click="createMenu"
+      >
+        Create Menu
+      </button>
+    </div>
+    <div
+      v-if="menus"
+      class="space-y-2 mb-2 flex flex-col"
+    >
+      <router-link
+        v-for="menu in showMenu()"
+        :key="menu.id"
+        :to="`/menus-management/menus/${menu.id}`"
+        class="text-truncate p-2"
+        :class="{
+          'space-y-2 bg-emerald-500': menu.id === activeMenu,
+          'text-slate-900': menu.id !== activeMenu,
+        }"
+        @click="open(menu)"
+      >
+        {{ menu.title }}
+      </router-link>
+    </div>
+  </div>
+</template>
+
+<script setup>
+import { useCollection } from 'vuefire';
+import { collection, getDoc, doc, addDoc, updateDoc, query, where, getDocs, onSnapshot } from 'firebase/firestore';
+import { db, auth } from '@/firebase/config';
+import router from '@/router';
+import { useRoute } from 'vue-router';
+import { reactive, onMounted } from 'vue';
+import { ref, watch } from 'vue'
+import { toast } from 'vue3-toastify';
+
+const user = JSON.parse(localStorage.getItem('user'));
+const userId = user ? user.uid : null;
+
+const menus = ref([]);
+
+const route = useRoute();
+const activeMenu = ref(null);
+
+const showMenu = () => {dsds
+  if (menus.value) {
+    const sortedMenus = [...menus.value].sort((a, b) => {
+      const dateA = a.updatedAt ? a.updatedAt.toDate() : a.createdAt.toDate();
+      const dateB = b.updatedAt ? b.updatedAt.toDate() : b.createdAt.toDate();
+      return dateB - date;
+    });
+    return sortedMenus;
+  }
+  return null;
+};
+
+const createMenu = async () => {
+  const user = auth.currentUser;
+  try {
+    toast.success('Menu Created!', {
+      autoClose: 700,
+      theme: 'dark',
+    });
+    const menuRef = collection(db, 'menus');
+    const newMenu = {
+      id: '',
+      childId: [],
+      title: 'New Menu',
+      description: '',
+      createdAt: new Date(),
+      createdBy: user.uid,
+    };
+    const docRef = await addDoc(menuRef, newMenu);
+    await updateDoc(docRef, { id: docRef.id });
+    newMenu.id = docRef.id;
+    router.push({ name: 'menus-detail', params: { id: newMenu.id } });
+    open(newMenu);
+  } catch (error) {
+    console.log(error);
+    toast.error('Menu Created Error!', {
+      autoClose: 700,
+      theme: 'dark',
+    });
+  }
+};
+
+const state = reactive({
+  selected: null,
+});
+
+const open = menu => {
+  state.selected = menu;
+  activeMenu.value = menu.id;
+  router.push({ name: 'menus-detail', params: { id: menu.id } });
+};
+
+onMounted(async () => {
+  const q = query(collection(db, 'menus'), where('createdBy', '==', userId));
+  const unsubscribe = onSnapshot(q, querySnapshot => {
+    const menuList = [];
+    querySnapshot.forEach(doc => {
+      const data = doc.data();
+      menuList.push({
+        id: doc.id,
+        childId: data.childId,
+        title: data.title,
+        description: data.description,
+        createdAt: data.createdAt,
+        createdBy: data.createdBy,
+      });
+    });
+    menus.value = menuList;
+  });
+  try {
+    const menuId = route.params.id;
+    if (menuId) {
+      const menuDocRef = doc(db, 'menus', menuId);
+      const menuDoc = await getDoc(menuDocRef);
+      if (menuDoc.exists()) {
+        const menuData = menuDoc.data();
+        state.selected = menuData;
+        open(menuData);
+      } else {
+        //console.log('No such menu!')
+        router.push('/menus-management');
+      }
+    }
+  } catch (error) {
+    console.error(error);
+  }
+  return unsubscribe;
+});
+
+watch(
+  () => route.path,
+  newVal => {
+    if (newVal === '/menus-management') {
+      activeMenu.value = null;
+    }
+  }
+);
+</script>
+
+<style lang="sass" scoped></style>
